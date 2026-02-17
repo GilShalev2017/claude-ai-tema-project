@@ -123,89 +123,305 @@ export const DashboardPage: React.FC = () => {
   );
 };
 */
-import { ArrowUpRight, ArrowDownRight, Package, Globe, Sparkles,
-         Layers, Download, ChevronRight, Database,
-         CheckCircle, Clock } from "lucide-react";
-import { Card } from '../components/ui/Card';
-import { Button } from '../components/ui/Button';
-import type { Artwork, Page } from '../types';
+import {
+  ArrowUpRight,
+  ArrowDownRight,
+  Package,
+  Globe,
+  Sparkles,
+  Layers,
+  Download,
+  ChevronRight,
+  Database,
+  CheckCircle,
+  Clock,
+} from "lucide-react";
+import { Card } from "../components/ui/Card";
+import { Button } from "../components/ui/Button";
+import type { Artwork, Page } from "../types";
 
-export function DashboardPage({ artworks, setPage }: { artworks:Artwork[]; setPage:(p:Page)=>void }) {
+export function DashboardPage({
+  artworks,
+  setPage,
+}: {
+  artworks: Artwork[];
+  setPage: (p: Page) => void;
+}) {
   const stats = [
-    { label:"Total Artworks",   value:artworks.length || 0,    icon:Package,    delta:"+12%", up:true,  color:"var(--gold)" },
-    { label:"Published",        value:artworks.filter(a=>a.isPublished).length, icon:Globe, delta:"+5%", up:true, color:"#4CAF81" },
-    { label:"AI Enriched",      value:artworks.filter(a=>a.aiEnriched).length, icon:Sparkles, delta:"new", up:true, color:"#9B7FD4" },
-    { label:"Departments",      value:[...new Set(artworks.map(a=>a.department))].length||0, icon:Layers, delta:"stable", up:true, color:"#5688E0" },
+    {
+      label: "Total Artworks",
+      value: artworks.length || 0,
+      icon: Package,
+      delta: "+12%",
+      up: true,
+      color: "var(--gold)",
+    },
+    {
+      label: "Published",
+      value: artworks.filter((a) => a.isPublished).length,
+      icon: Globe,
+      delta: "+5%",
+      up: true,
+      color: "#4CAF81",
+    },
+    {
+      label: "AI Enriched",
+      value: artworks.filter((a) => a.aiEnriched).length,
+      icon: Sparkles,
+      delta: "new",
+      up: true,
+      color: "#9B7FD4",
+    },
+    {
+      label: "Departments",
+      value: [...new Set(artworks.map((a) => a.department))].length || 0,
+      icon: Layers,
+      delta: "stable",
+      up: true,
+      color: "#5688E0",
+    },
   ];
 
-  const deptData = [...new Set(artworks.map(a=>a.department))].map(dept=>({
-    name:dept, count:artworks.filter(a=>a.department===dept).length
+  const deptData = [
+    ...new Set(
+      artworks.map((a) => a.department || a.metadata?.department || "Unknown"),
+    ),
+  ].map((dept) => ({
+    name: dept,
+    count: artworks.filter(
+      (a) => (a.department || a.metadata?.department || "Unknown") === dept,
+    ).length,
   }));
 
   const activity = [
-    { time:"2h ago",   action:"Import completed",       detail:"6 artworks synced from Met API",   icon:CheckCircle, color:"#4CAF81" },
-    { time:"5h ago",   action:"AI Enrichment",          detail:"The Starry Night — 10 tags added", icon:Sparkles,    color:"#9B7FD4" },
-    { time:"1d ago",   action:"Collection published",   detail:"Hokusai & Botticelli sets live",   icon:Globe,       color:"var(--gold)" },
-    { time:"2d ago",   action:"New import scheduled",   detail:"Met Museum API — 500 objects",     icon:Clock,       color:"#5688E0" },
+    {
+      time: "2h ago",
+      action: "Import completed",
+      detail: "6 artworks synced from Met API",
+      icon: CheckCircle,
+      color: "#4CAF81",
+    },
+    {
+      time: "5h ago",
+      action: "AI Enrichment",
+      detail: "The Starry Night — 10 tags added",
+      icon: Sparkles,
+      color: "#9B7FD4",
+    },
+    {
+      time: "1d ago",
+      action: "Collection published",
+      detail: "Hokusai & Botticelli sets live",
+      icon: Globe,
+      color: "var(--gold)",
+    },
+    {
+      time: "2d ago",
+      action: "New import scheduled",
+      detail: "Met Museum API — 500 objects",
+      icon: Clock,
+      color: "#5688E0",
+    },
   ];
 
   return (
-    <div className="slide-up" style={{ padding:32, overflow:"auto", height:"100%", display:"flex", flexDirection:"column", gap:28 }}>
-
+    <div
+      className="slide-up"
+      style={{
+        padding: 32,
+        overflow: "auto",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        gap: 28,
+      }}
+    >
       {/* Welcome */}
-      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-end" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-end",
+        }}
+      >
         <div>
-          <p style={{ fontSize:12, color:"var(--text-dim)", letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:6 }}>Good morning</p>
-          <h2 style={{ fontFamily:"var(--font-display)", fontSize:38, fontWeight:300, color:"var(--text)", lineHeight:1.1 }}>
-            Welcome back,<br/><em style={{ color:"var(--gold)" }}>Collection Manager</em>
+          <p
+            style={{
+              fontSize: 12,
+              color: "var(--text-dim)",
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              marginBottom: 6,
+            }}
+          >
+            Good morning
+          </p>
+          <h2
+            style={{
+              fontFamily: "var(--font-display)",
+              fontSize: 38,
+              fontWeight: 300,
+              color: "var(--text)",
+              lineHeight: 1.1,
+            }}
+          >
+            Welcome back,
+            <br />
+            <em style={{ color: "var(--gold)" }}>Collection Manager</em>
           </h2>
         </div>
-        <Button onClick={()=>setPage("import")} icon={<Download size={15}/>}>Sync Collection</Button>
+        <Button onClick={() => setPage("import")} icon={<Download size={15} />}>
+          Sync Collection
+        </Button>
       </div>
 
       {/* Stat Cards */}
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:16 }}>
-        {stats.map((s,i)=>(
-          <Card key={i} style={{ padding:24 }}>
-            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:16 }}>
-              <div style={{ width:40, height:40, borderRadius:10, background:`${s.color}18`, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                <s.icon size={18} style={{ color:s.color }}/>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(4,1fr)",
+          gap: 16,
+        }}
+      >
+        {stats.map((s, i) => (
+          <Card key={i} style={{ padding: 24 }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-start",
+                marginBottom: 16,
+              }}
+            >
+              <div
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 10,
+                  background: `${s.color}18`,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <s.icon size={18} style={{ color: s.color }} />
               </div>
-              <span style={{ fontSize:11, color:s.up?"#4CAF81":"#E05656", display:"flex", alignItems:"center", gap:3 }}>
-                {s.up ? <ArrowUpRight size={12}/> : <ArrowDownRight size={12}/>}{s.delta}
+              <span
+                style={{
+                  fontSize: 11,
+                  color: s.up ? "#4CAF81" : "#E05656",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 3,
+                }}
+              >
+                {s.up ? (
+                  <ArrowUpRight size={12} />
+                ) : (
+                  <ArrowDownRight size={12} />
+                )}
+                {s.delta}
               </span>
             </div>
-            <div style={{ fontFamily:"var(--font-display)", fontSize:40, fontWeight:500, color:"var(--text)", lineHeight:1 }}>{s.value}</div>
-            <div style={{ fontSize:12, color:"var(--text-dim)", marginTop:6, letterSpacing:"0.03em" }}>{s.label}</div>
+            <div
+              style={{
+                fontFamily: "var(--font-display)",
+                fontSize: 40,
+                fontWeight: 500,
+                color: "var(--text)",
+                lineHeight: 1,
+              }}
+            >
+              {s.value}
+            </div>
+            <div
+              style={{
+                fontSize: 12,
+                color: "var(--text-dim)",
+                marginTop: 6,
+                letterSpacing: "0.03em",
+              }}
+            >
+              {s.label}
+            </div>
           </Card>
         ))}
       </div>
 
       {/* Middle row */}
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:20 }}>
-
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
         {/* Dept breakdown */}
-        <Card style={{ padding:24 }}>
-          <div style={{ fontFamily:"var(--font-display)", fontSize:20, fontWeight:500, marginBottom:20, color:"var(--text)" }}>By Department</div>
+        <Card style={{ padding: 24 }}>
+          <div
+            style={{
+              fontFamily: "var(--font-display)",
+              fontSize: 20,
+              fontWeight: 500,
+              marginBottom: 20,
+              color: "var(--text)",
+            }}
+          >
+            By Department
+          </div>
           {artworks.length === 0 ? (
-            <div style={{ textAlign:"center", padding:32, color:"var(--text-dim)" }}>
-              <Database size={32} style={{ marginBottom:12, opacity:0.3 }}/>
+            <div
+              style={{
+                textAlign: "center",
+                padding: 32,
+                color: "var(--text-dim)",
+              }}
+            >
+              <Database size={32} style={{ marginBottom: 12, opacity: 0.3 }} />
               <p>Import your collection to see breakdown</p>
-              <div style={{ marginTop:16 }}><Button onClick={()=>setPage("import")} size="sm">Import Now</Button></div>
+              <div style={{ marginTop: 16 }}>
+                <Button onClick={() => setPage("import")} size="sm">
+                  Import Now
+                </Button>
+              </div>
             </div>
           ) : (
-            <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
-              {deptData.map((d,i)=>{
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {deptData.map((d, i) => {
                 const pct = Math.round((d.count / artworks.length) * 100);
-                const colors = ["var(--gold)","#4CAF81","#5688E0","#9B7FD4","#E05656"];
+                const colors = [
+                  "var(--gold)",
+                  "#4CAF81",
+                  "#5688E0",
+                  "#9B7FD4",
+                  "#E05656",
+                ];
                 return (
                   <div key={i}>
-                    <div style={{ display:"flex", justifyContent:"space-between", fontSize:12, marginBottom:5 }}>
-                      <span style={{ color:"var(--text-mid)" }}>{d.name}</span>
-                      <span style={{ color:"var(--text-dim)" }}>{d.count} works · {pct}%</span>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        fontSize: 12,
+                        marginBottom: 5,
+                      }}
+                    >
+                      <span style={{ color: "var(--text-mid)" }}>{d.name}</span>
+                      <span style={{ color: "var(--text-dim)" }}>
+                        {d.count} works · {pct}%
+                      </span>
                     </div>
-                    <div style={{ height:6, background:"var(--surface2)", borderRadius:4, overflow:"hidden" }}>
-                      <div style={{ height:"100%", width:`${pct}%`, background:colors[i%colors.length], borderRadius:4, transition:"width 1s cubic-bezier(.16,1,.3,1)" }}/>
+                    <div
+                      style={{
+                        height: 6,
+                        background: "var(--surface2)",
+                        borderRadius: 4,
+                        overflow: "hidden",
+                      }}
+                    >
+                      <div
+                        style={{
+                          height: "100%",
+                          width: `${pct}%`,
+                          background: colors[i % colors.length],
+                          borderRadius: 4,
+                          transition: "width 1s cubic-bezier(.16,1,.3,1)",
+                        }}
+                      />
                     </div>
                   </div>
                 );
@@ -215,19 +431,70 @@ export function DashboardPage({ artworks, setPage }: { artworks:Artwork[]; setPa
         </Card>
 
         {/* Activity feed */}
-        <Card style={{ padding:24 }}>
-          <div style={{ fontFamily:"var(--font-display)", fontSize:20, fontWeight:500, marginBottom:20, color:"var(--text)" }}>Recent Activity</div>
-          <div style={{ display:"flex", flexDirection:"column", gap:0 }}>
-            {activity.map((a,i)=>(
-              <div key={i} style={{ display:"flex", gap:14, padding:"12px 0", borderBottom: i<activity.length-1?"1px solid var(--border)":"none" }}>
-                <div style={{ width:32, height:32, minWidth:32, borderRadius:8, background:`${a.color}18`, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                  <a.icon size={14} style={{ color:a.color }}/>
+        <Card style={{ padding: 24 }}>
+          <div
+            style={{
+              fontFamily: "var(--font-display)",
+              fontSize: 20,
+              fontWeight: 500,
+              marginBottom: 20,
+              color: "var(--text)",
+            }}
+          >
+            Recent Activity
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+            {activity.map((a, i) => (
+              <div
+                key={i}
+                style={{
+                  display: "flex",
+                  gap: 14,
+                  padding: "12px 0",
+                  borderBottom:
+                    i < activity.length - 1
+                      ? "1px solid var(--border)"
+                      : "none",
+                }}
+              >
+                <div
+                  style={{
+                    width: 32,
+                    height: 32,
+                    minWidth: 32,
+                    borderRadius: 8,
+                    background: `${a.color}18`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <a.icon size={14} style={{ color: a.color }} />
                 </div>
-                <div style={{ flex:1 }}>
-                  <div style={{ fontSize:13, fontWeight:500, color:"var(--text)", marginBottom:2 }}>{a.action}</div>
-                  <div style={{ fontSize:11, color:"var(--text-dim)" }}>{a.detail}</div>
+                <div style={{ flex: 1 }}>
+                  <div
+                    style={{
+                      fontSize: 13,
+                      fontWeight: 500,
+                      color: "var(--text)",
+                      marginBottom: 2,
+                    }}
+                  >
+                    {a.action}
+                  </div>
+                  <div style={{ fontSize: 11, color: "var(--text-dim)" }}>
+                    {a.detail}
+                  </div>
                 </div>
-                <div style={{ fontSize:10, color:"var(--text-dim)", whiteSpace:"nowrap" }}>{a.time}</div>
+                <div
+                  style={{
+                    fontSize: 10,
+                    color: "var(--text-dim)",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {a.time}
+                </div>
               </div>
             ))}
           </div>
@@ -236,20 +503,84 @@ export function DashboardPage({ artworks, setPage }: { artworks:Artwork[]; setPa
 
       {/* Recent artworks preview */}
       {artworks.length > 0 && (
-        <Card style={{ padding:24 }}>
-          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
-            <div style={{ fontFamily:"var(--font-display)", fontSize:20, fontWeight:500, color:"var(--text)" }}>Latest Imports</div>
-            <Button onClick={()=>setPage("browse")} variant="ghost" size="sm" icon={<ChevronRight size={13}/>}>View all</Button>
+        <Card style={{ padding: 24 }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: 20,
+            }}
+          >
+            <div
+              style={{
+                fontFamily: "var(--font-display)",
+                fontSize: 20,
+                fontWeight: 500,
+                color: "var(--text)",
+              }}
+            >
+              Latest Imports
+            </div>
+            <Button
+              onClick={() => setPage("browse")}
+              variant="ghost"
+              size="sm"
+              icon={<ChevronRight size={13} />}
+            >
+              View all
+            </Button>
           </div>
-          <div style={{ display:"flex", gap:14, overflowX:"auto", paddingBottom:8 }}>
-            {artworks.slice(0,4).map(a=>(
-              <div key={a.objectID} style={{ minWidth:160, borderRadius:10, overflow:"hidden", background:"var(--surface2)", border:"1px solid var(--border)" }}>
-                <div style={{ height:110, overflow:"hidden" }}>
-                  <img src={a.primaryImage} alt={a.title} style={{ width:"100%", height:"100%", objectFit:"cover" }} onError={e=>{(e.target as HTMLImageElement).style.display="none"}}/>
+          <div
+            style={{
+              display: "flex",
+              gap: 14,
+              overflowX: "auto",
+              paddingBottom: 8,
+            }}
+          >
+            {artworks.slice(0, 4).map((a) => (
+              <div
+                key={a.id}
+                style={{
+                  minWidth: 160,
+                  borderRadius: 10,
+                  overflow: "hidden",
+                  background: "var(--surface2)",
+                  border: "1px solid var(--border)",
+                }}
+              >
+                <div style={{ height: 110, overflow: "hidden" }}>
+                  <img
+                    src={a.imageUrl || undefined}
+                    alt={a.title}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = "none";
+                    }}
+                  />
                 </div>
-                <div style={{ padding:"10px 12px" }}>
-                  <div style={{ fontSize:12, fontWeight:600, color:"var(--text)", marginBottom:2, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{a.title}</div>
-                  <div style={{ fontSize:10, color:"var(--text-dim)" }}>{a.artistDisplayName}</div>
+                <div style={{ padding: "10px 12px" }}>
+                  <div
+                    style={{
+                      fontSize: 12,
+                      fontWeight: 600,
+                      color: "var(--text)",
+                      marginBottom: 2,
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {a.title}
+                  </div>
+                  <div style={{ fontSize: 10, color: "var(--text-dim)" }}>
+                    {a.artist}
+                  </div>
                 </div>
               </div>
             ))}

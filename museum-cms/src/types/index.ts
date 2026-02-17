@@ -1,48 +1,69 @@
 import type { ReactNode } from "react";
 
-// ── Navigation ────────────────────────────────────────────────────────────
 export type Page = "dashboard" | "import" | "browse" | "settings";
 export type ViewMode = "grid" | "list";
 
-// ── Artwork ───────────────────────────────────────────────────────────────
-// Field names match the Met Museum API response AND the monolith exactly.
-// Do NOT rename these — every component references them by these names.
 export interface Artwork {
-  objectID: number;           // ← primary key. NOT "id"
+  // Core database fields (from Prisma schema)
+  id: string;                    // UUID primary key
+  museumId: string;              // "met", "louvre", etc.
+  externalId: string;            // Met Museum's objectID as string
   title: string;
-  artistDisplayName: string;  // ← NOT "artist"
-  objectDate: string;         // ← NOT "date"
-  department: string;
-  medium: string;
-  primaryImage: string;
-  objectURL: string;
-  classification: string;
-  culture: string;
-  tags: string[];
-  aiTags?: string[];
-  aiEnriched?: boolean;
+  artist: string | null;
+  year: number | null;
+  description: string | null;
+  imageUrl: string | null;       // Primary image URL
+  additionalImages: string[];
+  aiKeywords: string[];          // AI-generated tags
+  tags: string[];                // ← ADDED: Manual/curated tags
+  createdAt: string;
+  updatedAt: string;
+  
+  // Optional fields (can be computed or from metadata)
+  department?: string;
+  culture?: string;
+  medium?: string;
+  classification?: string;
   isPublished?: boolean;
+  aiEnriched?: boolean;
+  
+  // Full Met Museum metadata (stored as JSON in Prisma)
+  metadata?: {
+    objectID: number;
+    department: string;
+    title: string;
+    culture: string;
+    period: string;
+    artistDisplayName: string;
+    artistDisplayBio: string;
+    artistNationality: string;
+    objectDate: string;
+    objectBeginDate: number;
+    objectEndDate: number;
+    medium: string;
+    dimensions: string;
+    classification: string;
+    objectURL: string;
+    primaryImage: string;
+    additionalImages: string[];
+    isPublicDomain: boolean;
+    tags: Array<{ term: string; AAT_URL: string; Wikidata_URL: string }>;
+    [key: string]: any;
+  };
 }
 
-// ── Import Stats ──────────────────────────────────────────────────────────
-// Only three counters. NO "total" field.
 export interface ImportStats {
   new: number;
   updated: number;
   removed: number;
 }
 
-// ── Import Status ─────────────────────────────────────────────────────────
-// Discriminated union on "type". NOT "status".
-// Progress percentage is a SEPARATE useState<number> in ImportPage — not here.
 export interface ImportStatus {
   type: "idle" | "loading" | "success" | "error";
   message: string;
   stats?: ImportStats;
 }
 
-// ── Button ────────────────────────────────────────────────────────────────
-// "outline" is NOT a valid variant — use "secondary" or "ghost" instead.
 export interface ButtonProps {
   children: ReactNode;
   onClick?: () => void;
@@ -51,4 +72,9 @@ export interface ButtonProps {
   disabled?: boolean;
   icon?: ReactNode;
   fullWidth?: boolean;
+}
+
+export interface Department {
+  departmentId: number;
+  displayName: string;
 }

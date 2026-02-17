@@ -7,11 +7,11 @@ export function useEnrich(
 ) {
   // Tracks which objectIDs are currently being enriched
   const [enrichingStates, setEnrichingStates] = useState<
-    Record<number, boolean>
+    Record<string, boolean>
   >({});
 
   const enrichArtwork = async (artwork: Artwork): Promise<void> => {
-    setEnrichingStates((prev) => ({ ...prev, [artwork.objectID]: true }));
+    setEnrichingStates((prev) => ({ ...prev, [artwork.id]: true }));
 
     // Simulate LLM analysis delay
     await new Promise((r) => setTimeout(r, 2000));
@@ -22,17 +22,17 @@ export function useEnrich(
 
     setArtworks((prev) =>
       prev.map((a) =>
-        a.objectID === artwork.objectID
+        a.id === artwork.id
           ? { ...a, aiTags, aiEnriched: true }
           : a,
       ),
     );
 
-    setEnrichingStates((prev) => ({ ...prev, [artwork.objectID]: false }));
+    setEnrichingStates((prev) => ({ ...prev, [artwork.id]: false }));
   };
 
-  const isEnriching = (objectID: number): boolean =>
-    !!enrichingStates[objectID];
+  const isEnriching = (id: string): boolean =>
+    !!enrichingStates[id];
 
   return { enrichArtwork, isEnriching };
 }
