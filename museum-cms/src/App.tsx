@@ -43,14 +43,17 @@ import { DashboardPage } from "./pages/DashboardPage";
 import { ImportPage } from "./pages/ImportPage";
 import { BrowsePage } from "./pages/BrowsePage";
 import { SettingsPage } from "./pages/SettingsPage";
-import { GLOBAL_STYLES } from "./theme/theme";
 import { AI_KEYWORD_POOL } from "./constants/aiKeywords";
 import type { Artwork, Page } from "./types";
+
+import { useTheme } from "./theme/useTheme";
 
 export default function App() {
   const [page, setPage] = useState<Page>("dashboard");
   const [artworks, setArtworks] = useState<Artwork[]>([]);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  const { mode } = useTheme();
 
   const PAGE_META: Record<Page, { title: string; subtitle: string }> = {
     dashboard: { title: "Dashboard", subtitle: "Overview of your collection" },
@@ -93,7 +96,6 @@ export default function App() {
         background: "var(--bg)",
       }}
     >
-      <style>{GLOBAL_STYLES}</style>
 
       {/* Background texture */}
       <div
