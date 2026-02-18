@@ -171,13 +171,8 @@ export function useArtworkEnrichment() {
     setError(null);
 
     try {
-      // Find the artwork to get its numeric objectID from externalId
-      const artwork = artworks.find((item) => item.id === id);
-      if (!artwork?.externalId) {
-        throw new Error(`Artwork or externalId not found for id: ${id}`);
-      }
-
-      const enrichedItem = await enrichArtwork(Number(artwork.externalId));
+      // Use the Artwork.id directly (UUID) - no need to find artwork or use metadata
+      const enrichedItem = await enrichArtwork(id);
       return enrichedItem;
     } catch (err) {
       const apiError = err as ApiError;

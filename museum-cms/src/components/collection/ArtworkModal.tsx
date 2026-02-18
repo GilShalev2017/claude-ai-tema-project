@@ -29,6 +29,8 @@ export function ArtworkModal({
     return () => window.removeEventListener("keydown", fn);
   }, [onClose]);
 
+  console.log("aiKeywords", artwork.aiKeywords);
+  
   return (
     <div
       style={{

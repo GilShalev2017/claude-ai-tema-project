@@ -116,10 +116,10 @@ export const getItems = async (page: number = 1, limit: number = 100): Promise<P
 
 /**
  * Enrich a single artwork with AI-generated tags
- * @param objectID - The artwork's unique ID
+ * @param id - The artwork's UUID
  */
-export async function enrichArtwork(objectID: number): Promise<Artwork> {
-  const { data } = await api.post<Artwork>(`/collection/enrich/${objectID}`);
+export async function enrichArtwork(id: string): Promise<Artwork> {
+  const { data } = await api.post<Artwork>(`/enrich/${id}`);
   return data;
 }
 

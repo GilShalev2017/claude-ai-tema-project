@@ -14,6 +14,7 @@ import { ArtworkModal } from "../components/collection/ArtworkModal";
 import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
 import { usePaginatedItems } from "../hooks/useCollection";
+import { useArtworkEnrichment } from "../hooks/useCollection";
 import type { Artwork, ViewMode } from "../types";
 
 interface BrowsePageProps {
@@ -36,6 +37,9 @@ export function BrowsePage({
 
   // Use paginated hook to get all items (we'll do client-side pagination for filtered results)
   const { items, loading, error } = usePaginatedItems(1, 1000); // Reduced to 1000 for testing
+
+  // Use enrichment hook
+  const { enrich, isEnriching: isEnrichingArtwork, error: enrichError } = useArtworkEnrichment();
 
   // Debug: Log what we're getting
   //console.log('Debug - items:', items.length, 'loading:', loading, 'error:', error);
@@ -509,12 +513,12 @@ export function BrowsePage({
           artwork={selectedArtwork}
           onClose={() => setSelectedArtwork(null)}
           onEnrich={async (id) => {
-            await onEnrich(id);
+            await enrich(id, items);
             // Update local selected artwork if enrichment succeeded
             const updated = paginatedItems.find((a) => a.id === id);
             if (updated) setSelectedArtwork(updated);
           }}
-          isEnriching={(id) => isEnriching(id)}
+          isEnriching={isEnrichingArtwork}
         />
       )}
     </>
