@@ -81,17 +81,12 @@ export function ArtworkCard({ artwork, onClick }: ArtworkCardProps) {
           }}
         >
           {artwork.aiKeywords &&
-            artwork.aiKeywords.length > 0 && ( // ← FIXED: check aiKeywords not aiEnriched
+            artwork.aiKeywords.length > 0 && ( 
               <Badge>
                 <Sparkles size={10} /> AI
               </Badge>
             )}
           <Badge color="red">{artwork.metadata?.department}</Badge>
-          {/* {artwork.isPublished ? (
-            <Badge color="green">Published</Badge>
-          ) : (
-            <Badge color="red">Draft</Badge>
-          )} */}
         </div>
       </div>
       <div style={{ padding: "16px 18px" }}>

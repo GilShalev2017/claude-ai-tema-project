@@ -143,14 +143,20 @@ export function ArtworkModal({
               }}
             >
               {[
-                { label: "Department", value: artwork.department || "Unknown" },
+                {
+                  label: "Department",
+                  value: artwork.metadata?.department || "Unknown",
+                },
                 {
                   label: "Classification",
-                  value: artwork.classification || "Unknown",
+                  value: artwork.metadata?.classification || "Unknown",
                 },
-                { label: "Culture", value: artwork.culture || "Unknown" },
                 {
-                  label: "Medium",
+                  label: "Credit Line",
+                  value: artwork.metadata?.creditLine || "Unknown",
+                },
+                {
+                  label: "Description",
                   value: artwork.medium || artwork.description || "Unknown",
                 },
               ].map((m, i) => (
@@ -188,11 +194,7 @@ export function ArtworkModal({
 
             {/* Status */}
             <div style={{ display: "flex", gap: 10, marginBottom: 24 }}>
-              {artwork.isPublished ? (
-                <Badge color="green">✓ Published</Badge>
-              ) : (
-                <Badge color="red">Draft</Badge>
-              )}
+              <Badge color="green">✓ Published</Badge>
               {artwork.aiKeywords.length > 0 && (
                 <Badge>
                   <Sparkles size={10} /> AI Enriched
