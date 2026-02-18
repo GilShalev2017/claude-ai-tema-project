@@ -304,6 +304,7 @@ export function BrowsePage({
             display: "flex",
             flexDirection: "column",
             gap: 20,
+            minHeight: 0, // Allow flex child to shrink and expand properly
           }}
         >
           {/* Grid / List — USING PAGINATED ITEMS */}
@@ -313,6 +314,7 @@ export function BrowsePage({
                 display: "grid",
                 gridTemplateColumns: "repeat(auto-fill,minmax(260px,1fr))",
                 gap: 20,
+                minHeight: "fit-content", // Allow grid to expand to fit all items
               }}
             >
               {paginatedItems.map((a: Artwork) => (
@@ -324,7 +326,7 @@ export function BrowsePage({
               ))}
             </div>
           ) : (
-            <Card style={{ overflow: "hidden" }}>
+            <div style={{ overflow: "hidden", minHeight: "fit-content" }}>
               <div
                 style={{
                   padding: "10px 20px",
@@ -335,6 +337,10 @@ export function BrowsePage({
                   color: "var(--text-dim)",
                   textTransform: "uppercase",
                   letterSpacing: "0.08em",
+                  background: "var(--surface)",
+                  position: "sticky",
+                  top: 0,
+                  zIndex: 5,
                 }}
               >
                 <span style={{ width: 56, minWidth: 56 }}></span>
@@ -345,14 +351,16 @@ export function BrowsePage({
                 <span style={{ minWidth: 60 }}>AI</span>
                 <span style={{ width: 14 }}></span>
               </div>
-              {paginatedItems.map((a: Artwork) => (
-                <ArtworkListRow
-                  key={a.id}
-                  artwork={a}
-                  onClick={() => setSelectedArtwork(a)}
-                />
-              ))}
-            </Card>
+              <div style={{ background: "var(--surface)", minHeight: "fit-content" }}>
+                {paginatedItems.map((a: Artwork) => (
+                  <ArtworkListRow
+                    key={a.id}
+                    artwork={a}
+                    onClick={() => setSelectedArtwork(a)}
+                  />
+                ))}
+              </div>
+            </div>
           )}
 
         </div>
