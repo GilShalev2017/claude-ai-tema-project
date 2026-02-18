@@ -40,7 +40,7 @@ export function ArtworkListRow({ artwork, onClick }: ArtworkListRowProps) {
         }}
       >
         <img
-          src={artwork.imageUrl || ""}  
+          src={artwork.imageUrl || ""}
           alt={artwork.title}
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
           onError={(e) => {
@@ -63,25 +63,34 @@ export function ArtworkListRow({ artwork, onClick }: ArtworkListRowProps) {
           {artwork.title}
         </div>
         <div style={{ fontSize: 12, color: "var(--text-dim)" }}>
-          {artwork.artist || "Unknown Artist"} · {artwork.year || "Unknown"}  {/* ← FIXED: use year not objectDate */}
+          Artist: {artwork.artist || "Unknown"} · Culture: {artwork.metadata?.culture || "Unknown"}{" "}
+        </div>
+        <div style={{ fontSize: 12, color: "var(--text-dim)" }}>
+          Description: {artwork.metadata?.medium || "Unknown"}
         </div>
       </div>
       <div style={{ minWidth: 160, fontSize: 12, color: "var(--text-dim)" }}>
-        {artwork.department || "Unknown"}
+        {artwork.year || "Unknown"}
       </div>
-      <div style={{ minWidth: 80 }}>
-        {artwork.isPublished ? (
-          <Badge color="green">Published</Badge>
-        ) : (
-          <Badge color="red">Draft</Badge>
-        )}
+      <div style={{ minWidth: 160, fontSize: 12, color: "var(--text-dim)" }}>
+        {artwork.metadata?.department || "Unknown"}
       </div>
+      <div style={{ minWidth: 160, fontSize: 12, color: "var(--text-dim)" }}>
+        {artwork.metadata?.culture || "Unknown"}
+      </div>
+      <div style={{ minWidth: 160, fontSize: 12, color: "var(--text-dim)" }}>
+        {artwork.description || "Unknown"}
+      </div>
+       {/* <div style={{ minWidth: 160, fontSize: 12, color: "var(--text-dim)" }}>
+        {artwork.metadata?.dimensions || "Unknown"}
+      </div> */}
       <div style={{ minWidth: 60 }}>
-        {artwork.aiKeywords && artwork.aiKeywords.length > 0 && (  // ← FIXED: check aiKeywords not aiEnriched
-          <Badge>
-            <Sparkles size={10} /> AI
-          </Badge>
-        )}
+        {artwork.aiKeywords &&
+          artwork.aiKeywords.length > 0 && ( // ← FIXED: check aiKeywords not aiEnriched
+            <Badge>
+              <Sparkles size={10} /> AI
+            </Badge>
+          )}
       </div>
       <ChevronRight size={14} style={{ color: "var(--text-dim)" }} />
     </div>

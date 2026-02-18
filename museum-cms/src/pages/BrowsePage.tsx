@@ -344,10 +344,11 @@ export function BrowsePage({
                 }}
               >
                 <span style={{ width: 56, minWidth: 56 }}></span>
-                <span style={{ flex: 1 }}>Title / Artist</span>
-                <span style={{ minWidth: 120 }}>Year</span>
-                <span style={{ minWidth: 160 }}>Medium</span>
-                <span style={{ minWidth: 100 }}>Culture</span>
+                <span style={{ flex: 1, minWidth: 0 }}>Title</span>
+                <span style={{ minWidth: 160 }}>Year</span>
+                <span style={{ minWidth: 160 }}>Department</span>
+                <span style={{ minWidth: 160 }}>Culture</span>
+                <span style={{ minWidth: 160 }}>Description</span>
                 <span style={{ minWidth: 60 }}>AI</span>
                 <span style={{ width: 14 }}></span>
               </div>
