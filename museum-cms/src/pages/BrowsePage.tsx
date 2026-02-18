@@ -326,7 +326,7 @@ export function BrowsePage({
               ))}
             </div>
           ) : (
-            <div style={{ overflow: "hidden", minHeight: "fit-content" }}>
+            <Card style={{ overflow: "hidden", minHeight: "fit-content" }}>
               <div
                 style={{
                   padding: "10px 20px",
@@ -360,7 +360,7 @@ export function BrowsePage({
                   />
                 ))}
               </div>
-            </div>
+            </Card>
           )}
 
         </div>
