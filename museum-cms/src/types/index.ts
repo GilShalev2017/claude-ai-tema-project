@@ -49,6 +49,7 @@ export interface Artwork {
     isPublicDomain: boolean;
     tags: Array<{ term: string; AAT_URL: string; Wikidata_URL: string }>;
     [key: string]: any;
+   
   };
 }
 

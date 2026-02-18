@@ -11,7 +11,7 @@ interface ArtworkCardProps {
 
 export function ArtworkCard({ artwork, onClick }: ArtworkCardProps) {
   const [imgLoaded, setImgLoaded] = useState(false);
-  
+
   return (
     <div
       onClick={onClick}
@@ -45,10 +45,7 @@ export function ArtworkCard({ artwork, onClick }: ArtworkCardProps) {
         }}
       >
         {!imgLoaded && (
-          <div
-            className="shimmer"
-            style={{ position: "absolute", inset: 0 }}
-          />
+          <div className="shimmer" style={{ position: "absolute", inset: 0 }} />
         )}
         <img
           src={artwork.imageUrl || ""}
@@ -83,16 +80,18 @@ export function ArtworkCard({ artwork, onClick }: ArtworkCardProps) {
             gap: 6,
           }}
         >
-          {artwork.aiKeywords && artwork.aiKeywords.length > 0 && (  // ← FIXED: check aiKeywords not aiEnriched
-            <Badge>
-              <Sparkles size={10} /> AI
-            </Badge>
-          )}
-          {artwork.isPublished ? (
+          {artwork.aiKeywords &&
+            artwork.aiKeywords.length > 0 && ( // ← FIXED: check aiKeywords not aiEnriched
+              <Badge>
+                <Sparkles size={10} /> AI
+              </Badge>
+            )}
+          <Badge color="red">{artwork.metadata?.department}</Badge>
+          {/* {artwork.isPublished ? (
             <Badge color="green">Published</Badge>
           ) : (
             <Badge color="red">Draft</Badge>
-          )}
+          )} */}
         </div>
       </div>
       <div style={{ padding: "16px 18px" }}>
@@ -120,6 +119,40 @@ export function ArtworkCard({ artwork, onClick }: ArtworkCardProps) {
         >
           {artwork.artist || "Unknown Artist"}
         </div>
+        {artwork.tags && artwork.tags.length > 0 && (
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 4,
+              marginBottom: 8,
+              maxHeight: 24,
+              overflow: "hidden",
+            }}
+          >
+            {artwork.tags.slice(0, 3).map((tag, i) => (
+              <span
+                key={i}
+                style={{
+                  fontSize: 9,
+                  padding: "2px 6px",
+                  borderRadius: 10,
+                  background: "var(--gold-dim)",
+                  color: "var(--gold)",
+                  border: "1px solid var(--border-gold)",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {tag}
+              </span>
+            ))}
+            {artwork.tags.length > 3 && (
+              <span style={{ fontSize: 9, color: "var(--text-dim)" }}>
+                +{artwork.tags.length - 3}
+              </span>
+            )}
+          </div>
+        )}
         <div
           style={{
             display: "flex",
@@ -130,11 +163,11 @@ export function ArtworkCard({ artwork, onClick }: ArtworkCardProps) {
         >
           <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
             <Calendar size={11} />
-            {artwork.year || "Unknown"}  {/* ← FIXED: use year not objectDate */}
+            {artwork.year || "Unknown"} {/* ← FIXED: use year not objectDate */}
           </span>
           <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
             <Tag size={11} />
-            {artwork.department || "Unknown"}
+            {artwork.metadata?.medium || "Unknown"}
           </span>
         </div>
       </div>

@@ -1,13 +1,15 @@
 // src/hooks/useCollection.ts
-import { useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import {
   getCollectionItems,
+  getItems,
   importFromMet,
   enrichArtwork,
   getDepartments,
   type ImportMetResponse,
   type Department,
   type ApiError,
+  type PaginatedResponse,
 } from "../api/client";
 import type { Artwork } from "../types";
 
@@ -35,6 +37,44 @@ export function useCollectionItems() {
   return { items, loading, error, fetchItems, setItems };
 }
 
+// ── Hook: Fetch Paginated Collection Items ──────────────────────────────
+export function usePaginatedItems(page: number = 1, limit: number = 100) {
+  const [data, setData] = useState<PaginatedResponse<Artwork> | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchPage = async (pageNum: number = page, limitNum: number = limit) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await getItems(pageNum, limitNum);
+      setData(response);
+      return response;
+    } catch (err) {
+      const apiError = err as ApiError;
+      setError(apiError.message || "Failed to load page");
+      console.error("Failed to fetch page:", err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Auto-fetch on mount and when page/limit changes
+  useEffect(() => {
+    fetchPage();
+  }, [page, limit]);
+
+  return {
+    data,
+    items: data?.items || [],
+    pagination: data?.pagination,
+    loading,
+    error,
+    fetchPage,
+  };
+}
+
 // ── Hook: Import from Met Museum ──────────────────────────────────────────
 interface ImportProgress {
   stage: string;
@@ -49,11 +89,13 @@ export function useMetImport() {
   });
   const [result, setResult] = useState<ImportMetResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const runImport = async (
     searchTerm: string = "*",
     departmentIds: number[] = [],
   ) => {
+    abortControllerRef.current = new AbortController();
     setImporting(true);
     setError(null);
     setResult(null);
@@ -74,16 +116,37 @@ export function useMetImport() {
         await new Promise((r) => setTimeout(r, 400));
       }
 
-      const data = await importFromMet(searchTerm, departmentIds);
+      const data = await importFromMet(
+        searchTerm,
+        departmentIds,
+        abortControllerRef.current.signal,
+      );
+
+      console.log("Import response:", data);
+      console.log("Items received:", data.items?.length || 0);
+
       setResult(data);
       setProgress({ stage: "Complete!", percent: 100 });
     } catch (err) {
+      if (err instanceof Error && err.name === "AbortError") {
+        setError("Import cancelled");
+        return;
+      }
       const apiError = err as ApiError;
+
+      console.error("Import failed:", apiError);
+
       setError(apiError.message || "Import failed");
       console.error("Import failed:", err);
     } finally {
       setImporting(false);
     }
+  };
+
+  const abort = () => {
+    abortControllerRef.current?.abort();
+    setImporting(false);
+    setError("Import cancelled by user");
   };
 
   const reset = () => {
@@ -92,7 +155,7 @@ export function useMetImport() {
     setProgress({ stage: "", percent: 0 });
   };
 
-  return { importing, progress, result, error, runImport, reset };
+  return { importing, progress, result, error, runImport, abort, reset };
 }
 
 // ── Hook: AI Enrichment ────────────────────────────────────────────────────
@@ -100,7 +163,10 @@ export function useArtworkEnrichment() {
   const [enrichingIds, setEnrichingIds] = useState<Set<string>>(new Set());
   const [error, setError] = useState<string | null>(null);
 
-  const enrich = async (id: string, artworks: Artwork[] = []): Promise<Artwork | null> => {
+  const enrich = async (
+    id: string,
+    artworks: Artwork[] = [],
+  ): Promise<Artwork | null> => {
     setEnrichingIds((prev) => new Set(prev).add(id));
     setError(null);
 
@@ -110,7 +176,7 @@ export function useArtworkEnrichment() {
       if (!artwork?.externalId) {
         throw new Error(`Artwork or externalId not found for id: ${id}`);
       }
-      
+
       const enrichedItem = await enrichArtwork(Number(artwork.externalId));
       return enrichedItem;
     } catch (err) {

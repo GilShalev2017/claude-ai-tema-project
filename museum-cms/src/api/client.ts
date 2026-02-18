@@ -33,6 +33,18 @@ export interface ApiError {
   message?: string;
 }
 
+export interface PaginatedResponse<T> {
+  items: T[];
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    itemsPerPage: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+  };
+}
+
 // ── Request/Response Interceptors ─────────────────────────────────────────
 api.interceptors.request.use(
   (config) => {
@@ -73,8 +85,7 @@ api.interceptors.response.use(
  * @param departmentIds - Array of department IDs to filter
  */
 export async function importFromMet(
-  searchTerm: string = "*",
-  departmentIds: number[] = [],
+searchTerm: string = "*", departmentIds: number[] = [], signal: AbortSignal,
 ): Promise<ImportMetResponse> {
   const { data } = await api.post<ImportMetResponse>("/import/met", {
     searchTerm,
@@ -84,12 +95,24 @@ export async function importFromMet(
 }
 
 /**
- * Fetch all collection items from database
+ * Fetch all collection items from database (non-paginated)
  */
 export async function getCollectionItems(): Promise<Artwork[]> {
   const { data } = await api.get<Artwork[]>("/items");
   return data;
 }
+
+/**
+ * Fetch collection items with pagination
+ * @param page - Page number (default: 1)
+ * @param limit - Items per page (default: 100, max: 1000)
+ */
+export const getItems = async (page: number = 1, limit: number = 100): Promise<PaginatedResponse<Artwork>> => {
+  const { data } = await api.get<PaginatedResponse<Artwork>>("/items", { 
+    params: { page, limit } 
+  });
+  return data;
+};
 
 /**
  * Enrich a single artwork with AI-generated tags
