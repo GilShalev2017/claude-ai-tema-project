@@ -6,6 +6,7 @@ import {
   Download,
   ChevronLeft,
   ChevronRight,
+  X,
 } from "lucide-react";
 import { ArtworkCard } from "../components/collection/ArtworkCard";
 import { ArtworkListRow } from "../components/collection/ArtworkListRow";
@@ -33,12 +34,41 @@ export function BrowsePage({
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 100;
 
-  // Use paginated hook
-  const { items, pagination, loading, error, fetchPage } = usePaginatedItems(currentPage, ITEMS_PER_PAGE);
+  // Use paginated hook to get all items (we'll do client-side pagination for filtered results)
+  const { items, loading, error } = usePaginatedItems(1, 1000); // Reduced to 1000 for testing
 
-  // Extract departments from items
+  // Debug: Log what we're getting
+  console.log('Debug - items:', items.length, 'loading:', loading, 'error:', error);
+
+  // Filter items based on search and department
+  const filteredItems = items.filter((artwork) => {
+    const searchLower = search.toLowerCase().trim();
+    const matchesSearch = searchLower === "" || 
+      artwork.title?.toLowerCase().includes(searchLower) ||
+      artwork.artist?.toLowerCase().includes(searchLower) ||
+      artwork.metadata?.department?.toLowerCase().includes(searchLower) ||
+      artwork.culture?.toLowerCase().includes(searchLower) ||
+      artwork.medium?.toLowerCase().includes(searchLower);
+    
+    const matchesDept = deptFilter === "" || 
+      artwork.metadata?.department === deptFilter || 
+      artwork.department === deptFilter;
+    
+    return matchesSearch && matchesDept;
+  });
+
+  // Debug: Log filtered results
+  console.log('Debug - filteredItems:', filteredItems.length);
+
+  // Client-side pagination for filtered items
+  const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const paginatedItems = filteredItems.slice(startIndex, endIndex);
+
+  // Extract departments from filtered items
   const departments = [
-    ...new Set(items.map((a) => a.metadata?.department || a.department || "Unknown")),
+    ...new Set(filteredItems.map((a) => a.metadata?.department || a.department || "Unknown")),
   ];
 
   // Reset to page 1 when filters change
@@ -73,26 +103,28 @@ export function BrowsePage({
         >
           🏛️
         </div>
-        <div
-          style={{
-            fontFamily: "var(--font-display)",
-            fontSize: 28,
-            color: "var(--text)",
-            textAlign: "center",
-          }}
-        >
-          Your Collection Awaits
+        <div style={{ fontSize: 14, color: "var(--text-dim)" }}>
+          Loading artworks...
         </div>
-        <div
-          style={{
-            color: "var(--text-dim)",
-            fontSize: 13,
-            textAlign: "center",
-            maxWidth: 360,
-          }}
-        >
-          Import artworks from the Metropolitan Museum API to start browsing
-          your collection.
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100%",
+          gap: 20,
+          padding: 32,
+        }}
+      >
+        <div style={{ fontSize: 16, color: "var(--text)" }}>
+          Error loading artworks: {error}
         </div>
         <Button onClick={onImport} icon={<Download size={14} />}>
           Import Collection
@@ -148,6 +180,7 @@ export function BrowsePage({
                 border: "1px solid var(--border)",
                 borderRadius: 10,
                 padding: "10px 14px 10px 36px",
+                paddingRight: search ? "40px" : "14px", // Add space for clear icon
                 color: "var(--text)",
                 fontSize: 13,
                 outline: "none",
@@ -160,6 +193,41 @@ export function BrowsePage({
                 (e.target.style.border = "1px solid var(--border)")
               }
             />
+            {search && (
+              <button
+                onClick={() => setSearch("")}
+                style={{
+                  position: "absolute",
+                  right: 12,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  background: "var(--surface)",
+                  border: "1px solid var(--border)",
+                  borderRadius: 4,
+                  color: "var(--text-dim)",
+                  cursor: "pointer",
+                  padding: 4,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  transition: "all 0.2s",
+                  zIndex: 10,
+                  width: 20,
+                  height: 20,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = "var(--text)";
+                  e.currentTarget.style.borderColor = "var(--border-gold)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = "var(--text-dim)";
+                  e.currentTarget.style.borderColor = "var(--border)";
+                }}
+                title="Clear search"
+              >
+                <X size={12} />
+              </button>
+            )}
           </div>
 
           <select
@@ -221,7 +289,7 @@ export function BrowsePage({
               whiteSpace: "nowrap",
             }}
           >
-            {pagination?.totalItems || items.length} {pagination?.totalItems === 1 ? "artwork" : "artworks"}
+            {items.length} {items.length === 1 ? "artwork" : "artworks"}
           </div>
         </div>
 
@@ -247,7 +315,7 @@ export function BrowsePage({
                 gap: 20,
               }}
             >
-              {items.map((a: Artwork) => (
+              {paginatedItems.map((a: Artwork) => (
                 <ArtworkCard
                   key={a.id}
                   artwork={a}
@@ -277,7 +345,7 @@ export function BrowsePage({
                 <span style={{ minWidth: 60 }}>AI</span>
                 <span style={{ width: 14 }}></span>
               </div>
-              {items.map((a: Artwork) => (
+              {paginatedItems.map((a: Artwork) => (
                 <ArtworkListRow
                   key={a.id}
                   artwork={a}
@@ -309,13 +377,13 @@ export function BrowsePage({
         }}
       >
         <div style={{ fontSize: 13, color: "var(--text)", fontWeight: 500, flex: 1, marginLeft: 250}}>
-          Showing {ITEMS_PER_PAGE} of {pagination?.totalItems || items.length || 0} items (Page {currentPage} of {pagination?.totalPages || 1})
+          Showing {Math.min(ITEMS_PER_PAGE, paginatedItems.length)} of {filteredItems.length} items (Page {currentPage} of {totalPages})
         </div>
 
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
             <button
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              disabled={pagination?.currentPage === 1}
+                  disabled={currentPage === 1}
               style={{
                 padding: "8px 12px",
                 background: "var(--surface)",
@@ -337,7 +405,6 @@ export function BrowsePage({
 
             {/* Page number buttons */}
             {(() => {
-              const totalPages = pagination?.totalPages || 1;
               const currentPageNum = currentPage;
               const maxVisiblePages = 5;
               
@@ -376,25 +443,25 @@ export function BrowsePage({
 
             <button
               onClick={() =>
-                setCurrentPage((p) => Math.min(pagination?.totalPages || 1, p + 1))
+                setCurrentPage((p) => Math.min(totalPages, p + 1))
               }
-              disabled={currentPage === pagination?.totalPages}
+              disabled={currentPage === totalPages}
               style={{
                 padding: "8px 12px",
                 background: "var(--surface)",
                 border: "1px solid var(--border)",
                 borderRadius: 8,
                 color:
-                  currentPage === pagination?.totalPages
+                  currentPage === totalPages
                     ? "var(--text-dim)"
                     : "var(--text)",
                 cursor:
-                  currentPage === pagination?.totalPages ? "not-allowed" : "pointer",
+                  currentPage === totalPages ? "not-allowed" : "pointer",
                 display: "flex",
                 alignItems: "center",
                 gap: 4,
                 fontSize: 12,
-                opacity: currentPage === pagination?.totalPages ? 0.5 : 1,
+                opacity: currentPage === totalPages ? 0.5 : 1,
               }}
             >
               Next
@@ -410,7 +477,7 @@ export function BrowsePage({
           onEnrich={async (id) => {
             await onEnrich(id);
             // Update local selected artwork if enrichment succeeded
-            const updated = items.find((a) => a.id === id);
+            const updated = paginatedItems.find((a) => a.id === id);
             if (updated) setSelectedArtwork(updated);
           }}
           isEnriching={(id) => isEnriching(id)}
