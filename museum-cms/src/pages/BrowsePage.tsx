@@ -38,27 +38,29 @@ export function BrowsePage({
   const { items, loading, error } = usePaginatedItems(1, 1000); // Reduced to 1000 for testing
 
   // Debug: Log what we're getting
-  console.log('Debug - items:', items.length, 'loading:', loading, 'error:', error);
+  //console.log('Debug - items:', items.length, 'loading:', loading, 'error:', error);
 
   // Filter items based on search and department
   const filteredItems = items.filter((artwork) => {
     const searchLower = search.toLowerCase().trim();
-    const matchesSearch = searchLower === "" || 
+    const matchesSearch =
+      searchLower === "" ||
       artwork.title?.toLowerCase().includes(searchLower) ||
       artwork.artist?.toLowerCase().includes(searchLower) ||
       artwork.metadata?.department?.toLowerCase().includes(searchLower) ||
       artwork.culture?.toLowerCase().includes(searchLower) ||
       artwork.medium?.toLowerCase().includes(searchLower);
-    
-    const matchesDept = deptFilter === "" || 
-      artwork.metadata?.department === deptFilter || 
+
+    const matchesDept =
+      deptFilter === "" ||
+      artwork.metadata?.department === deptFilter ||
       artwork.department === deptFilter;
-    
+
     return matchesSearch && matchesDept;
   });
 
   // Debug: Log filtered results
-  console.log('Debug - filteredItems:', filteredItems.length);
+  console.log("Debug - filteredItems:", filteredItems.length);
 
   // Client-side pagination for filtered items
   const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
@@ -68,7 +70,11 @@ export function BrowsePage({
 
   // Extract departments from filtered items
   const departments = [
-    ...new Set(filteredItems.map((a) => a.metadata?.department || a.department || "Unknown")),
+    ...new Set(
+      filteredItems.map(
+        (a) => a.metadata?.department || a.department || "Unknown",
+      ),
+    ),
   ];
 
   // Reset to page 1 when filters change
@@ -343,16 +349,23 @@ export function BrowsePage({
                   zIndex: 5,
                 }}
               >
-                <span style={{ width: 56, minWidth: 56 }}></span>
-                <span style={{ flex: 1, minWidth: 0 }}>Title</span>
-                <span style={{ minWidth: 160 }}>Year</span>
-                <span style={{ minWidth: 160 }}>Department</span>
-                <span style={{ minWidth: 160 }}>Culture</span>
-                <span style={{ minWidth: 160 }}>Description</span>
-                <span style={{ minWidth: 60 }}>AI</span>
-                <span style={{ width: 14 }}></span>
+                {/* Column Widths must match ArtworkListRow exactly */}
+                <span style={{ width: 56, minWidth: 56 }}>Image</span>
+                <span style={{ flex: 1, minWidth: 0 }}>Title / Details</span>
+                <span style={{ width: 100, minWidth: 100 }}>Year</span>
+                <span style={{ width: 140, minWidth: 140 }}>Department</span>
+                <span style={{ width: 120, minWidth: 120 }}>Culture</span>
+                <span style={{ width: 160, minWidth: 160 }}>Description</span>
+                <span style={{ width: 60, minWidth: 60 }}>AI</span>
+                <span style={{ width: 14 }}></span> {/* Chevron space */}
               </div>
-              <div style={{ background: "var(--surface)", minHeight: "fit-content" }}>
+
+              <div
+                style={{
+                  background: "var(--surface)",
+                  minHeight: "fit-content",
+                }}
+              >
                 {paginatedItems.map((a: Artwork) => (
                   <ArtworkListRow
                     key={a.id}
@@ -363,7 +376,6 @@ export function BrowsePage({
               </div>
             </Card>
           )}
-
         </div>
       </div>
 
@@ -385,99 +397,112 @@ export function BrowsePage({
           minHeight: 60,
         }}
       >
-        <div style={{ fontSize: 13, color: "var(--text)", fontWeight: 500, flex: 1, marginLeft: 250}}>
-          Showing {Math.min(ITEMS_PER_PAGE, paginatedItems.length)} of {filteredItems.length} items (Page {currentPage} of {totalPages})
+        <div
+          style={{
+            fontSize: 13,
+            color: "var(--text)",
+            fontWeight: 500,
+            flex: 1,
+            marginLeft: 250,
+          }}
+        >
+          Showing {Math.min(ITEMS_PER_PAGE, paginatedItems.length)} of{" "}
+          {filteredItems.length} items (Page {currentPage} of {totalPages})
         </div>
 
-          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <button
-              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
-              style={{
-                padding: "8px 12px",
-                background: "var(--surface)",
-                border: "1px solid var(--border)",
-                borderRadius: 8,
-                color:
-                  currentPage === 1 ? "var(--text-dim)" : "var(--text)",
-                cursor: currentPage === 1 ? "not-allowed" : "pointer",
-                display: "flex",
-                alignItems: "center",
-                gap: 4,
-                fontSize: 12,
-                opacity: currentPage === 1 ? 0.5 : 1,
-              }}
-            >
-              <ChevronLeft size={14} />
-              Previous
-            </button>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <button
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            style={{
+              padding: "8px 12px",
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
+              borderRadius: 8,
+              color: currentPage === 1 ? "var(--text-dim)" : "var(--text)",
+              cursor: currentPage === 1 ? "not-allowed" : "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: 4,
+              fontSize: 12,
+              opacity: currentPage === 1 ? 0.5 : 1,
+            }}
+          >
+            <ChevronLeft size={14} />
+            Previous
+          </button>
 
-            {/* Page number buttons */}
-            {(() => {
-              const currentPageNum = currentPage;
-              const maxVisiblePages = 5;
-              
-              let startPage = Math.max(1, currentPageNum - Math.floor(maxVisiblePages / 2));
-              let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-              
-              // Adjust start page if we're near the end
-              if (endPage - startPage < maxVisiblePages - 1) {
-                startPage = Math.max(1, endPage - maxVisiblePages + 1);
-              }
-              
-              const pages = [];
-              for (let i = startPage; i <= endPage; i++) {
-                pages.push(i);
-              }
-              
-              return pages.map((pageNum) => (
-                <button
-                  key={pageNum}
-                  onClick={() => setCurrentPage(pageNum)}
-                  style={{
-                    padding: "8px 12px",
-                    background: pageNum === currentPageNum ? "var(--gold-dim)" : "var(--surface)",
-                    border: pageNum === currentPageNum ? "1px solid var(--border-gold)" : "1px solid var(--border)",
-                    borderRadius: 8,
-                    color: pageNum === currentPageNum ? "var(--gold)" : "var(--text)",
-                    cursor: "pointer",
-                    fontSize: 12,
-                    fontWeight: pageNum === currentPageNum ? 600 : 400,
-                  }}
-                >
-                  {pageNum}
-                </button>
-              ));
-            })()}
+          {/* Page number buttons */}
+          {(() => {
+            const currentPageNum = currentPage;
+            const maxVisiblePages = 5;
 
-            <button
-              onClick={() =>
-                setCurrentPage((p) => Math.min(totalPages, p + 1))
-              }
-              disabled={currentPage === totalPages}
-              style={{
-                padding: "8px 12px",
-                background: "var(--surface)",
-                border: "1px solid var(--border)",
-                borderRadius: 8,
-                color:
-                  currentPage === totalPages
-                    ? "var(--text-dim)"
-                    : "var(--text)",
-                cursor:
-                  currentPage === totalPages ? "not-allowed" : "pointer",
-                display: "flex",
-                alignItems: "center",
-                gap: 4,
-                fontSize: 12,
-                opacity: currentPage === totalPages ? 0.5 : 1,
-              }}
-            >
-              Next
-              <ChevronRight size={14} />
-            </button>
-          </div>
+            let startPage = Math.max(
+              1,
+              currentPageNum - Math.floor(maxVisiblePages / 2),
+            );
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+            // Adjust start page if we're near the end
+            if (endPage - startPage < maxVisiblePages - 1) {
+              startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+
+            const pages = [];
+            for (let i = startPage; i <= endPage; i++) {
+              pages.push(i);
+            }
+
+            return pages.map((pageNum) => (
+              <button
+                key={pageNum}
+                onClick={() => setCurrentPage(pageNum)}
+                style={{
+                  padding: "8px 12px",
+                  background:
+                    pageNum === currentPageNum
+                      ? "var(--gold-dim)"
+                      : "var(--surface)",
+                  border:
+                    pageNum === currentPageNum
+                      ? "1px solid var(--border-gold)"
+                      : "1px solid var(--border)",
+                  borderRadius: 8,
+                  color:
+                    pageNum === currentPageNum ? "var(--gold)" : "var(--text)",
+                  cursor: "pointer",
+                  fontSize: 12,
+                  fontWeight: pageNum === currentPageNum ? 600 : 400,
+                }}
+              >
+                {pageNum}
+              </button>
+            ));
+          })()}
+
+          <button
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+            style={{
+              padding: "8px 12px",
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
+              borderRadius: 8,
+              color:
+                currentPage === totalPages ? "var(--text-dim)" : "var(--text)",
+              cursor: currentPage === totalPages ? "not-allowed" : "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: 4,
+              fontSize: 12,
+              opacity: currentPage === totalPages ? 0.5 : 1,
+            }}
+          >
+            Next
+            <ChevronRight size={14} />
+          </button>
         </div>
+      </div>
 
       {selectedArtwork && (
         <ArtworkModal
