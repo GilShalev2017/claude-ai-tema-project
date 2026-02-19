@@ -359,7 +359,7 @@ export function ArtworkModal({
                   onClick={() => onEnrich(artwork.id)}
                   disabled={enriching || aiKeywords.length > 0}
                   icon={enriching ? <Spinner /> : <Sparkles size={14} />}
-                  style={{ width: "100%" }}
+                  fullWidth={true}
                 >
                   {enriching
                     ? "Analyzing..."
@@ -371,7 +371,7 @@ export function ArtworkModal({
               {artwork.metadata?.objectURL && (
                 <Button
                   onClick={() =>
-                    window.open(artwork.metadata.objectURL, "_blank")
+                    window.open(artwork.metadata?.objectURL, "_blank")
                   }
                   variant="secondary"
                   icon={<Eye size={14} />}
