@@ -14,7 +14,7 @@ import { ArtworkModal } from "../components/collection/ArtworkModal";
 import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
 import { usePaginatedItems } from "../hooks/useCollection";
-import { useArtworkEnrichment } from "../hooks/useCollection";
+import { useEnrichment } from "../hooks/useEnrichment";
 import type { Artwork, ViewMode } from "../types";
 
 interface BrowsePageProps {
@@ -39,7 +39,7 @@ export function BrowsePage({
   const { items, loading, error } = usePaginatedItems(1, 1000); // Reduced to 1000 for testing
 
   // Use enrichment hook
-  const { enrich, isEnriching: isEnrichingArtwork, error: enrichError } = useArtworkEnrichment();
+  const { enrich, isEnriching: isEnrichingArtwork, error: enrichError } = useEnrichment();
 
   // Debug: Log what we're getting
   //console.log('Debug - items:', items.length, 'loading:', loading, 'error:', error);
@@ -64,7 +64,7 @@ export function BrowsePage({
   });
 
   // Debug: Log filtered results
-  console.log("Debug - filteredItems:", filteredItems.length);
+  // console.log("Debug - filteredItems:", filteredItems.length);
 
   // Client-side pagination for filtered items
   const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
@@ -513,10 +513,18 @@ export function BrowsePage({
           artwork={selectedArtwork}
           onClose={() => setSelectedArtwork(null)}
           onEnrich={async (id) => {
-            await enrich(id, items);
-            // Update local selected artwork if enrichment succeeded
-            const updated = paginatedItems.find((a) => a.id === id);
-            if (updated) setSelectedArtwork(updated);
+            try {
+              const enrichedArtwork = await enrich(id);
+              // Update the selected artwork state with the enriched data
+              setSelectedArtwork((prev) => {
+                if (prev?.id === id) {
+                  return enrichedArtwork;
+                }
+                return prev;
+              });
+            } catch (error) {
+              console.error("Enrichment failed:", error);
+            }
           }}
           isEnriching={isEnrichingArtwork}
         />

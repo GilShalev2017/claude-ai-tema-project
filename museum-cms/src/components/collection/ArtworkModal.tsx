@@ -30,7 +30,7 @@ export function ArtworkModal({
   }, [onClose]);
 
   console.log("aiKeywords", artwork.aiKeywords);
-  
+
   return (
     <div
       style={{
@@ -197,7 +197,7 @@ export function ArtworkModal({
             {/* Status */}
             <div style={{ display: "flex", gap: 10, marginBottom: 24 }}>
               <Badge color="green">✓ Published</Badge>
-              {artwork.aiKeywords.length > 0 && (
+              {(artwork.aiKeywords || []).length > 0 && (
                 <Badge>
                   <Sparkles size={10} /> AI Enriched
                 </Badge>
@@ -205,7 +205,7 @@ export function ArtworkModal({
             </div>
 
             {/* Original Tags */}
-            {artwork.tags && artwork.tags.length > 0 && (
+            {/* {artwork.tags && artwork.tags.length > 0 && (
               <div style={{ marginBottom: 20 }}>
                 <div
                   style={{
@@ -236,7 +236,7 @@ export function ArtworkModal({
                   ))}
                 </div>
               </div>
-            )}
+            )} */}
 
             {/* AI Tags */}
             {artwork.aiKeywords && artwork.aiKeywords.length > 0 && (
@@ -257,7 +257,7 @@ export function ArtworkModal({
                   AI-Generated Keywords
                 </div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
-                  {artwork.aiKeywords.map((t: string, i: number) => (
+                  {(Array.isArray(artwork.aiKeywords) ? artwork.aiKeywords : []).map((t: string, i: number) => (
                     <span
                       key={i}
                       style={{
@@ -280,12 +280,12 @@ export function ArtworkModal({
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
               <Button
                 onClick={() => onEnrich(artwork.id)}
-                disabled={enriching || artwork.aiKeywords.length > 0}
+                disabled={enriching || (artwork.aiKeywords || []).length > 0}
                 icon={enriching ? <Spinner /> : <Sparkles size={14} />}
               >
                 {enriching
                   ? "Analyzing…"
-                  : artwork.aiKeywords.length > 0
+                  : (artwork.aiKeywords || []).length > 0
                     ? "Already Enriched"
                     : "Enrich with AI"}
               </Button>

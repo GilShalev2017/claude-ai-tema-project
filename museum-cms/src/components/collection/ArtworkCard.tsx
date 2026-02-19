@@ -80,7 +80,7 @@ export function ArtworkCard({ artwork, onClick }: ArtworkCardProps) {
             gap: 6,
           }}
         >
-          {artwork.aiKeywords && artwork.aiKeywords.length > 0 && (
+          {Array.isArray(artwork.aiKeywords) && artwork.aiKeywords.length > 0 && (
             <Badge>
               <Sparkles size={10} /> AI
             </Badge>
@@ -130,7 +130,7 @@ export function ArtworkCard({ artwork, onClick }: ArtworkCardProps) {
             {artwork.metadata?.medium || "Unknown"}
           </span>
         </div>
-        {artwork.aiKeywords && artwork.aiKeywords.length > 0 && (
+        {Array.isArray(artwork.aiKeywords) && artwork.aiKeywords.length > 0 && (
           <div
             style={{
               display: "flex",
@@ -141,7 +141,9 @@ export function ArtworkCard({ artwork, onClick }: ArtworkCardProps) {
               overflow: "hidden",
             }}
           >
-            {artwork.aiKeywords.slice(0, 2).map((tag, i) => (
+            {(Array.isArray(artwork.aiKeywords) ? artwork.aiKeywords : [])
+              .slice(0, 2)
+              .map((tag, i) => (
               <span
                 key={i}
                 style={{
@@ -157,7 +159,7 @@ export function ArtworkCard({ artwork, onClick }: ArtworkCardProps) {
                 {tag}
               </span>
             ))}
-            {artwork.aiKeywords.length > 2 && (
+            {Array.isArray(artwork.aiKeywords) && artwork.aiKeywords.length > 2 && (
               <span
                 style={{
                   fontSize: 12,

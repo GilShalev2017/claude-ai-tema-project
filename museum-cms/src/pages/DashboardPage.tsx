@@ -23,7 +23,7 @@ interface DashboardPageProps {
 
 export function DashboardPage({ setPage }: DashboardPageProps) {
   // Use paginated hook for dashboard stats
-  const { items } = usePaginatedItems(1, 10000); // Get all items for stats
+  const { items } = usePaginatedItems(1, 1000); // Get all items for stats
 
   // Sort artworks by createdAt descending for recent items display
   const sortedArtworks = [...items].sort(
@@ -124,7 +124,7 @@ export function DashboardPage({ setPage }: DashboardPageProps) {
           time: timeAgo,
           action: "AI Enrichment",
           detail: artwork.title
-            ? `"${artwork.title}" — ${artwork.aiKeywords.length} keywords added`
+            ? `"${artwork.title}" — ${(artwork.aiKeywords || []).length} keywords added`
             : "Unknown artwork — AI enrichment failed",
           icon: Sparkles,
           color: "#9B7FD4",

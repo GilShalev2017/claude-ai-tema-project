@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Sidebar } from "./components/layout/Sidebar";
 import { TopBar } from "./components/layout/TopBar";
 import { DashboardPage } from "./pages/DashboardPage";
@@ -6,10 +7,11 @@ import { ImportPage } from "./pages/ImportPage";
 import { BrowsePage } from "./pages/BrowsePage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { useTheme } from "./theme/useTheme";
-import {
-  useArtworkEnrichment,
-} from "./hooks/useCollection";
+import { useEnrichment } from "./hooks/useEnrichment";
 import type { Artwork, Page } from "./types";
+
+// Create a client
+const queryClient = new QueryClient();
 
 const PAGE_META: Record<Page, { title: string; subtitle: string }> = {
   dashboard: { title: "Dashboard", subtitle: "Overview of your collection" },
@@ -27,7 +29,6 @@ const PAGE_META: Record<Page, { title: string; subtitle: string }> = {
 export default function App() {
   const [page, setPage] = useState<Page>("dashboard");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const { enrich, isEnriching } = useArtworkEnrichment();
 
   const { mode } = useTheme();
 
@@ -36,12 +37,43 @@ export default function App() {
     setPage("browse"); // Navigate to browse after successful import
   };
 
+  // ── Dynamic subtitle with count ──────────────────────────────────────────
+  const subtitle = PAGE_META[page].subtitle;
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AppContent
+        page={page}
+        setPage={setPage}
+        sidebarCollapsed={sidebarCollapsed}
+        setSidebarCollapsed={setSidebarCollapsed}
+        subtitle={subtitle}
+        onImportComplete={handleImportComplete}
+      />
+    </QueryClientProvider>
+  );
+}
+
+function AppContent({
+  page,
+  setPage,
+  sidebarCollapsed,
+  setSidebarCollapsed,
+  subtitle,
+  onImportComplete,
+}: {
+  page: Page;
+  setPage: (page: Page) => void;
+  sidebarCollapsed: boolean;
+  setSidebarCollapsed: (collapsed: boolean) => void;
+  subtitle: string;
+  onImportComplete: () => void;
+}) {
+  const { enrich, isEnriching } = useEnrichment();
+
   const handleEnrich = async (id: string) => {
     await enrich(id);
   };
-
-  // ── Dynamic subtitle with count ──────────────────────────────────────────
-  const subtitle = PAGE_META[page].subtitle;
 
   return (
     <div
@@ -52,8 +84,6 @@ export default function App() {
         background: "var(--bg)",
       }}
     >
-      {/* <style>{GLOBAL_STYLES}</style> */}
-
       {/* Background texture */}
       <div
         style={{
@@ -87,18 +117,14 @@ export default function App() {
 
         <div style={{ flex: 1, overflow: "hidden" }}>
           {/* Pages */}
-          {page === "dashboard" && (
-            <DashboardPage setPage={setPage} />
-          )}
+          {page === "dashboard" && <DashboardPage setPage={setPage} />}
           {page === "import" && (
-            <ImportPage
-              onImportComplete={handleImportComplete}
-            />
+            <ImportPage onImportComplete={onImportComplete} />
           )}
           {page === "browse" && (
             <BrowsePage
-              onEnrich={handleEnrich} 
-              isEnriching={isEnriching} 
+              onEnrich={handleEnrich}
+              isEnriching={isEnriching}
               onImport={() => setPage("import")}
             />
           )}

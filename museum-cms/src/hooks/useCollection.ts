@@ -1,5 +1,6 @@
 // src/hooks/useCollection.ts
 import { useRef, useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
   getCollectionItems,
   getItems,
@@ -39,39 +40,24 @@ export function useCollectionItems() {
 
 // ── Hook: Fetch Paginated Collection Items ──────────────────────────────
 export function usePaginatedItems(page: number = 1, limit: number = 100) {
-  const [data, setData] = useState<PaginatedResponse<Artwork> | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchPage = async (pageNum: number = page, limitNum: number = limit) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await getItems(pageNum, limitNum);
-      setData(response);
-      return response;
-    } catch (err) {
-      const apiError = err as ApiError;
-      setError(apiError.message || "Failed to load page");
-      console.error("Failed to fetch page:", err);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Auto-fetch on mount and when page/limit changes
-  useEffect(() => {
-    fetchPage();
-  }, [page, limit]);
+  const {
+    data,
+    isLoading: loading,
+    error,
+    refetch: fetchPage,
+  } = useQuery({
+    queryKey: ["items", page, limit],
+    queryFn: () => getItems(page, limit),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 
   return {
     data,
     items: data?.items || [],
     pagination: data?.pagination,
     loading,
-    error,
-    fetchPage,
+    error: error?.message || null,
+    fetchPage: () => fetchPage(),
   };
 }
 

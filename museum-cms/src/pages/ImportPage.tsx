@@ -1289,6 +1289,11 @@ export function ImportPage({
                     color: "var(--gold)",
                   },
                   {
+                    label: "Skipped",
+                    value: result.stats.skipped,
+                    color: "var(--gold)",
+                  },
+                  {
                     label: "Removed",
                     value: result.stats.removed,
                     color: "#B8392E",

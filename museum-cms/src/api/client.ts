@@ -17,6 +17,7 @@ export interface ImportMetResponse {
   stats: {
     new: number;
     updated: number;
+    skipped: number;
     removed: number;
   };
   items: Artwork[];
