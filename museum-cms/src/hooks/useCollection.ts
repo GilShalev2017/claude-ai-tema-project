@@ -5,12 +5,14 @@ import {
   getCollectionItems,
   getItems,
   importFromMet,
+  importFromCSV,
   enrichArtwork,
   getDepartments,
   type ImportMetResponse,
   type Department,
   type ApiError,
   type PaginatedResponse,
+  type CSVImportResponse,
 } from "../api/client";
 import type { Artwork } from "../types";
 
@@ -202,3 +204,95 @@ export function useDepartments() {
 
   return { departments, loading, error, fetchDepartments };
 }
+
+
+
+
+// Hook: CSV Import
+interface CSVImportProgress {
+  stage: string;
+  percent: number;
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// Hook: CSV Import — UPDATED VERSION USING CLIENT.TS
+// ══════════════════════════════════════════════════════════════════════════
+interface CSVImportProgress {
+  stage: string;
+  percent: number;
+}
+
+export function useCSVImport() {
+  const [importing, setImporting] = useState(false);
+  const [progress, setProgress] = useState<CSVImportProgress>({
+    stage: "",
+    percent: 0,
+  });
+  const [result, setResult] = useState<CSVImportResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const runImport = async (csvFile: File, imageFiles?: FileList | null) => {
+    setImporting(true);
+    setError(null);
+    setResult(null);
+    setProgress({ stage: "Preparing upload...", percent: 10 });
+
+    try {
+      // Add image files progress indication
+      if (imageFiles && imageFiles.length > 0) {
+        setProgress({
+          stage: `Uploading CSV + ${imageFiles.length} images...`,
+          percent: 30,
+        });
+      } else {
+        setProgress({ stage: "Uploading CSV...", percent: 30 });
+      }
+
+      // Call the API client method
+      const data = await importFromCSV(csvFile, imageFiles);
+
+      setProgress({ stage: "Processing data...", percent: 70 });
+
+      // Small delay to show processing stage
+      await new Promise((r) => setTimeout(r, 500));
+
+      setProgress({ stage: "Complete!", percent: 100 });
+      setResult(data);
+
+      return data;
+    } catch (err) {
+      const apiError = err as ApiError;
+      const errorMessage = apiError.message || "CSV import failed";
+      setError(errorMessage);
+      console.error("CSV import error:", err);
+      return null;
+    } finally {
+      setImporting(false);
+    }
+  };
+
+  const reset = () => {
+    setResult(null);
+    setError(null);
+    setProgress({ stage: "", percent: 0 });
+  };
+
+  return { importing, progress, result, error, runImport, reset };
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

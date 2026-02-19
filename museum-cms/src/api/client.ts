@@ -86,7 +86,9 @@ api.interceptors.response.use(
  * @param departmentIds - Array of department IDs to filter
  */
 export async function importFromMet(
-searchTerm: string = "*", departmentIds: number[] = [], signal: AbortSignal,
+  searchTerm: string = "*",
+  departmentIds: number[] = [],
+  signal: AbortSignal,
 ): Promise<ImportMetResponse> {
   const { data } = await api.post<ImportMetResponse>("/import/met", {
     searchTerm,
@@ -108,9 +110,12 @@ export async function getCollectionItems(): Promise<Artwork[]> {
  * @param page - Page number (default: 1)
  * @param limit - Items per page (default: 100, max: 1000)
  */
-export const getItems = async (page: number = 1, limit: number = 100): Promise<PaginatedResponse<Artwork>> => {
-  const { data } = await api.get<PaginatedResponse<Artwork>>("/items", { 
-    params: { page, limit } 
+export const getItems = async (
+  page: number = 1,
+  limit: number = 100,
+): Promise<PaginatedResponse<Artwork>> => {
+  const { data } = await api.get<PaginatedResponse<Artwork>>("/items", {
+    params: { page, limit },
   });
   return data;
 };
@@ -137,6 +142,47 @@ export async function getDepartments(): Promise<Department[]> {
  */
 export async function healthCheck(): Promise<{ status: string }> {
   const { data } = await api.get<{ status: string }>("/health");
+  return data;
+}
+
+
+export interface CSVImportResponse {
+  success: boolean;
+  items: Artwork[];
+  stats: {
+    new: number;
+    updated: number;
+    removed: number;
+  };
+  message?: string;
+}
+
+/**
+ * Import artworks from CSV file with optional images
+ * @param csvFile - CSV file containing artwork metadata
+ * @param imageFiles - Optional array of image files
+ */
+export async function importFromCSV(
+  csvFile: File,
+  imageFiles?: FileList | null,
+): Promise<CSVImportResponse> {
+  const formData = new FormData();
+  formData.append("csv", csvFile);
+
+  // Add image files if provided
+  if (imageFiles && imageFiles.length > 0) {
+    Array.from(imageFiles).forEach((file) => {
+      formData.append("images", file);
+    });
+  }
+
+  // Use axios for the request but override Content-Type for FormData
+  const { data } = await api.post<CSVImportResponse>("/import/csv", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
   return data;
 }
 
