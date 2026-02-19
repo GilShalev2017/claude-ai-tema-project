@@ -144,7 +144,7 @@ export function DashboardPage({ setPage }: DashboardPageProps) {
         height: "100%",
         display: "flex",
         flexDirection: "column",
-        gap: 28,
+        gap: 20, //28,
       }}
     >
       {/* Welcome */}
@@ -156,24 +156,13 @@ export function DashboardPage({ setPage }: DashboardPageProps) {
         }}
       >
         <div>
-          <p
-            style={{
-              fontSize: 12,
-              color: "var(--text-dim)",
-              letterSpacing: "0.1em",
-              textTransform: "uppercase",
-              marginBottom: 6,
-            }}
-          >
-            Good morning
-          </p>
           <h2
             style={{
               fontFamily: "var(--font-display)",
-              fontSize: 38,
+              fontSize: 32, //38,
               fontWeight: 300,
               color: "var(--text)",
-              lineHeight: 1.1,
+              lineHeight: 1, //1.1,
             }}
           >
             Welcome back,
@@ -195,7 +184,16 @@ export function DashboardPage({ setPage }: DashboardPageProps) {
         }}
       >
         {stats.map((s, i) => (
-          <Card key={i} style={{ padding: 24 }}>
+          <Card
+            key={i}
+            style={{
+              padding: "16px 20px", // Reduced from likely 24px or 32px
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              minHeight: "120px",
+            }}
+          >
             <div
               style={{
                 display: "flex",
@@ -237,7 +235,7 @@ export function DashboardPage({ setPage }: DashboardPageProps) {
             <div
               style={{
                 fontFamily: "var(--font-display)",
-                fontSize: 40,
+                fontSize: 34, //40,
                 fontWeight: 500,
                 color: "var(--text)",
                 lineHeight: 1,
@@ -262,7 +260,15 @@ export function DashboardPage({ setPage }: DashboardPageProps) {
       {/* Middle row */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
         {/* Dept breakdown */}
-        <Card style={{ padding: 24 }}>
+        <Card
+          style={{
+            padding: 24,
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            maxHeight: "38vh", //"400px",
+          }}
+        >
           <div
             style={{
               fontFamily: "var(--font-display)",
@@ -291,7 +297,16 @@ export function DashboardPage({ setPage }: DashboardPageProps) {
               </div>
             </div>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 10,
+                overflowY: "auto",
+                padding: "0 20px 20px 20px",
+                flex: 1,
+              }}
+            >
               {deptData.map((d, i) => {
                 const pct = Math.round((d.count / items.length) * 100);
                 const colors = [
@@ -342,7 +357,15 @@ export function DashboardPage({ setPage }: DashboardPageProps) {
         </Card>
 
         {/* Activity feed */}
-        <Card style={{ padding: 24 }}>
+        <Card
+          style={{
+            padding: 24,
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            // maxHeight: "38vh",
+          }}
+        >
           <div
             style={{
               fontFamily: "var(--font-display)",
@@ -474,7 +497,7 @@ export function DashboardPage({ setPage }: DashboardPageProps) {
                   border: "1px solid var(--border)",
                 }}
               >
-                <div style={{ height: 110, overflow: "hidden" }}>
+                <div style={{ height: 105 /*110*/, overflow: "hidden" }}>
                   <img
                     src={a.imageUrl || ""}
                     alt={a.title}

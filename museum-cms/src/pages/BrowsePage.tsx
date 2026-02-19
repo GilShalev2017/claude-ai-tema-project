@@ -39,10 +39,11 @@ export function BrowsePage({
   const { items, loading, error } = usePaginatedItems(1, 1000); // Reduced to 1000 for testing
 
   // Use enrichment hook
-  const { enrich, isEnriching: isEnrichingArtwork, error: enrichError } = useEnrichment();
-
-  // Debug: Log what we're getting
-  //console.log('Debug - items:', items.length, 'loading:', loading, 'error:', error);
+  const {
+    enrich,
+    isEnriching: isEnrichingArtwork,
+    error: enrichError,
+  } = useEnrichment();
 
   // Filter items based on search and department
   const filteredItems = items.filter((artwork) => {
@@ -62,9 +63,6 @@ export function BrowsePage({
 
     return matchesSearch && matchesDept;
   });
-
-  // Debug: Log filtered results
-  // console.log("Debug - filteredItems:", filteredItems.length);
 
   // Client-side pagination for filtered items
   const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
@@ -153,7 +151,6 @@ export function BrowsePage({
           overflow: "hidden",
         }}
       >
-        {/* ✅ STICKY CONTROLS BAR */}
         <div
           style={{
             position: "sticky",
@@ -190,7 +187,7 @@ export function BrowsePage({
                 border: "1px solid var(--border)",
                 borderRadius: 10,
                 padding: "10px 14px 10px 36px",
-                paddingRight: search ? "40px" : "14px", // Add space for clear icon
+                paddingRight: search ? "40px" : "14px",
                 color: "var(--text)",
                 fontSize: 13,
                 outline: "none",
@@ -303,28 +300,26 @@ export function BrowsePage({
           </div>
         </div>
 
-        {/* ✅ SCROLLABLE CONTENT AREA */}
         <div
           className="slide-up"
           style={{
             flex: 1,
             overflow: "auto",
             padding: 32,
-            paddingBottom: 120, // Increase bottom padding for sticky pagination
+            paddingBottom: 120,
             display: "flex",
             flexDirection: "column",
             gap: 20,
-            minHeight: 0, // Allow flex child to shrink and expand properly
+            minHeight: 0,
           }}
         >
-          {/* Grid / List — USING PAGINATED ITEMS */}
           {viewMode === "grid" ? (
             <div
               style={{
                 display: "grid",
                 gridTemplateColumns: "repeat(auto-fill,minmax(260px,1fr))",
                 gap: 20,
-                minHeight: "fit-content", // Allow grid to expand to fit all items
+                minHeight: "fit-content",
               }}
             >
               {paginatedItems.map((a: Artwork) => (
@@ -383,7 +378,6 @@ export function BrowsePage({
         </div>
       </div>
 
-      {/* ✅ STICKY PAGINATION */}
       <div
         style={{
           position: "fixed",
