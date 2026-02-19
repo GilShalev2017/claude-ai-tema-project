@@ -30,6 +30,7 @@ export function ArtworkModal({
   }, [onClose]);
 
   console.log("aiKeywords", artwork.aiKeywords);
+  console.log("additionalImages", artwork.additionalImages);
 
   return (
     <div
@@ -203,40 +204,6 @@ export function ArtworkModal({
                 </Badge>
               )}
             </div>
-
-            {/* Original Tags */}
-            {/* {artwork.tags && artwork.tags.length > 0 && (
-              <div style={{ marginBottom: 20 }}>
-                <div
-                  style={{
-                    fontSize: 11,
-                    color: "var(--text-dim)",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.1em",
-                    marginBottom: 10,
-                  }}
-                >
-                  Collection Tags
-                </div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
-                  {artwork.tags.map((t: string, i: number) => (
-                    <span
-                      key={i}
-                      style={{
-                        padding: "4px 12px",
-                        borderRadius: 20,
-                        background: "var(--surface2)",
-                        border: "1px solid var(--border)",
-                        fontSize: 12,
-                        color: "var(--text-mid)",
-                      }}
-                    >
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )} */}
 
             {/* AI Tags */}
             {artwork.aiKeywords && artwork.aiKeywords.length > 0 && (
