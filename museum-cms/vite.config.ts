@@ -43,6 +43,10 @@ export default defineConfig({
         // Optional: rewrite path if backend doesn't use /api prefix
         // rewrite: (path) => path.replace(/^\/api/, ''),
       },
+      '/uploads': {  // ← ADD THIS
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      }
     },
   },
 });
