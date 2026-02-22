@@ -8,11 +8,16 @@ import {
   importFromCSV,
   enrichArtwork,
   getDepartments,
-  type ImportMetResponse,
-  type Department,
-  type ApiError,
-  type PaginatedResponse,
-  type CSVImportResponse,
+  importFromDrive,
+  getGoogleAuthUrl
+} from "../api/client";
+import type {
+  ImportMetResponse,
+  Department,
+  ApiError,
+  PaginatedResponse,
+  CSVImportResponse,
+  DriveImportResponse 
 } from "../api/client";
 import type { Artwork } from "../types";
 
@@ -205,18 +210,7 @@ export function useDepartments() {
   return { departments, loading, error, fetchDepartments };
 }
 
-
-
-
 // Hook: CSV Import
-interface CSVImportProgress {
-  stage: string;
-  percent: number;
-}
-
-// ══════════════════════════════════════════════════════════════════════════
-// Hook: CSV Import — UPDATED VERSION USING CLIENT.TS
-// ══════════════════════════════════════════════════════════════════════════
 interface CSVImportProgress {
   stage: string;
   percent: number;
@@ -280,19 +274,56 @@ export function useCSVImport() {
   return { importing, progress, result, error, runImport, reset };
 }
 
+export function useDriveImport() {
+  const [importing, setImporting] = useState(false);
+  const [progress, setProgress] = useState<{ stage: string; percent: number }>({
+    stage: "",
+    percent: 0,
+  });
+  const [result, setResult] = useState<DriveImportResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
+  // Renamed from initiateAuth to initiateDriveImport to match ImportPage.tsx
+  const initiateDriveImport = async () => {
+    try {
+      const url = await getGoogleAuthUrl();
+      window.location.href = url;
+    } catch (err: any) {
+      setError("Failed to connect to Google Drive.");
+    }
+  };
 
+  const runImport = async (folderId: string, accessToken: string) => {
+    setImporting(true);
+    setError(null);
+    setProgress({ stage: "Importing from Drive...", percent: 30 });
 
+    try {
+      const data = await importFromDrive(folderId, accessToken);
+      setProgress({ stage: "Complete!", percent: 100 });
+      setResult(data);
+      return data;
+    } catch (err: any) {
+      setError(err.message || "Drive import failed.");
+      return null;
+    } finally {
+      setImporting(false);
+    }
+  };
 
+  const reset = () => {
+    setResult(null);
+    setError(null);
+    setProgress({ stage: "", percent: 0 });
+  };
 
-
-
-
-
-
-
-
-
-
-
-
+  return { 
+    importing, 
+    progress, 
+    result, 
+    error, 
+    initiateDriveImport, // Renamed here
+    runImport,     
+    reset 
+  };
+}

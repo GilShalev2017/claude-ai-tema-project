@@ -75,6 +75,14 @@ function AppContent({
     await enrich(id);
   };
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    // If we see 'code' in the URL, it means Google just sent us back
+    if (params.get("code")) {
+      setPage("import");
+    }
+  }, []);
+
   return (
     <div
       style={{

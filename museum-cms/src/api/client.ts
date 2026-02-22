@@ -145,7 +145,6 @@ export async function healthCheck(): Promise<{ status: string }> {
   return data;
 }
 
-
 export interface CSVImportResponse {
   success: boolean;
   items: Artwork[];
@@ -184,6 +183,34 @@ export async function importFromCSV(
   });
 
   return data;
+}
+
+// Add to client.ts
+export interface DriveImportResponse {
+  success: boolean;
+  items: Artwork[];
+  stats: {
+    new: number;
+    updated: number;
+  };
+}
+
+export async function importFromDrive(
+  folderId: string,
+  accessToken: string,
+): Promise<DriveImportResponse> {
+  const { data } = await api.post<DriveImportResponse>("/import/drive", {
+    folderId,
+    accessToken,
+  });
+  return data;
+}
+
+export async function getGoogleAuthUrl(): Promise<string> {
+  const { data } = await api.get<{ url: string }>(
+    "/import/drive/auth",
+  );
+  return data.url;
 }
 
 export default api;

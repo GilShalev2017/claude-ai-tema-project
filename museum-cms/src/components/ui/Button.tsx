@@ -61,6 +61,7 @@ interface ButtonProps {
   disabled?: boolean;
   icon?: React.ReactNode;
   fullWidth?: boolean;
+  style?: React.CSSProperties;
 }
 export function Button({
   children,
@@ -70,6 +71,7 @@ export function Button({
   disabled,
   icon,
   fullWidth,
+  style,
 }: ButtonProps) {
   const styles: Record<string, React.CSSProperties> = {
     primary: {
@@ -114,6 +116,7 @@ export function Button({
         width: fullWidth ? "100%" : "auto",
         ...styles[variant],
         ...sizes[size],
+        ...style,
       }}
       onMouseEnter={(e) => {
         if (!disabled)

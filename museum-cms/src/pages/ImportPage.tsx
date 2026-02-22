@@ -20,8 +20,10 @@ import {
   useMetImport,
   useDepartments,
   useCSVImport,
+  useDriveImport,
 } from "../hooks/useCollection";
 import type { Artwork } from "../types";
+import { DriveImportCard } from "../components/import/DriveImportCard";
 
 interface ImportPageProps {
   onImportComplete: (items: Artwork[]) => void;
@@ -94,11 +96,17 @@ export function ImportPage({
   // ══════════════════════════════════════════════════════════════════════════
   // GOOGLE DRIVE STATE
   // ══════════════════════════════════════════════════════════════════════════
-  const [driveFolderId, setDriveFolderId] = useState("");
-  const [driveImporting, setDriveImporting] = useState(false);
-  const [driveProgress, setDriveProgress] = useState(0);
-  const [driveResult, setDriveResult] = useState<any>(null);
-  const [driveError, setDriveError] = useState<string | null>(null);
+  //const [driveFolderId, setDriveFolderId] = useState("");
+  //const [driveImporting, setDriveImporting] = useState(false);
+  //const [driveProgress, setDriveProgress] = useState< number | { stage?: string; percent?: number }>(0);
+  //const [driveResult, setDriveResult] = useState<any>(null);
+  //const [driveError, setDriveError] = useState<string | null>(null);
+
+  // const {
+  //   initiateDriveImport,
+  //   importing: hookImporting,
+  //   error: hookError,
+  // } = useDriveImport();
 
   // ══════════════════════════════════════════════════════════════════════════
   // EFFECTS
@@ -128,44 +136,34 @@ export function ImportPage({
   // ══════════════════════════════════════════════════════════════════════════
   // GOOGLE DRIVE HANDLERS
   // ══════════════════════════════════════════════════════════════════════════
-  const handleDriveImport = async () => {
-    if (!driveFolderId.trim()) return;
+  // const handleDriveImport = async () => {
+  //   // Instead of setDriveProgress(0), use:
+  //   setDriveProgress({ stage: "Initializing...", percent: 0 });
 
-    setDriveImporting(true);
-    setDriveError(null);
-    setDriveProgress(0);
+  //   try {
+  //     // Instead of setDriveProgress(20), use:
+  //     setDriveProgress({ stage: "Authenticating...", percent: 20 });
 
-    try {
-      setDriveProgress(20);
+  //     await initiateDriveImport();
 
-      const response = await fetch("/api/collection/import/drive", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ folderId: driveFolderId.trim() }),
-      });
+  //     // Instead of setDriveProgress(60), use:
+  //     setDriveProgress({ stage: "Connecting...", percent: 60 });
 
-      setDriveProgress(60);
+  //     // ... rest of logic
 
-      if (!response.ok) {
-        throw new Error("Google Drive import failed");
-      }
+  //     // Instead of setDriveProgress(100), use:
+  //     setDriveProgress({ stage: "Complete", percent: 100 });
+  //   } catch (err) {
+  //     // Instead of setDriveProgress(0), use:
+  //     setDriveProgress(0);
+  //   }
+  // };
 
-      const data = await response.json();
-      setDriveProgress(100);
-      setDriveResult(data);
-      setDriveFolderId("");
-    } catch (error: any) {
-      setDriveError(error.message || "Failed to import from Google Drive");
-    } finally {
-      setDriveImporting(false);
-    }
-  };
-
-  const resetDrive = () => {
-    setDriveResult(null);
-    setDriveError(null);
-    setDriveProgress(0);
-  };
+  // const resetDrive = () => {
+  //   setDriveResult(null);
+  //   setDriveError(null);
+  //   setDriveProgress(0);
+  // };
 
   return (
     <div
@@ -842,9 +840,7 @@ export function ImportPage({
               >
                 CSV Import
               </div>
-              <div
-                style={{ fontSize: 12, color: "var(--text-dim)", marginTop: 2 }}
-              >
+              <div style={{ fontSize: 12, color: "var(--gold)", marginTop: 2 }}>
                 Custom metadata + images
               </div>
             </div>
@@ -1139,29 +1135,22 @@ export function ImportPage({
         {/* ════════════════════════════════════════════════════════════════════ */}
         {/* CARD 3: GOOGLE DRIVE */}
         {/* ════════════════════════════════════════════════════════════════════ */}
-        <Card
-          style={{
-            padding: 32,
-            border: "1px solid var(--border)",
-            position: "relative",
-            overflow: "visible",
-          }}
-        >
-          {/* Header */}
+        <DriveImportCard />
+        {/* <Card style={{ padding: 32, border: "1px solid var(--border-gold)" }}>
           <div style={{ display: "flex", gap: 16, marginBottom: 24 }}>
             <div
               style={{
                 width: 52,
                 height: 52,
                 borderRadius: 14,
-                background: "rgba(251, 188, 4, 0.15)",
-                border: "1px solid rgba(251, 188, 4, 0.3)",
+                background: "rgba(66, 133, 244, 0.1)",
+                border: "1px solid rgba(66, 133, 244, 0.2)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              <FolderOpen size={28} style={{ color: "#FBBC04" }} />
+              <FolderOpen size={24} style={{ color: "#4285F4" }} />
             </div>
             <div>
               <div
@@ -1177,247 +1166,140 @@ export function ImportPage({
               <div
                 style={{ fontSize: 12, color: "var(--text-dim)", marginTop: 2 }}
               >
-                Folder ingestion
+                Import images from a Drive folder
               </div>
             </div>
           </div>
 
-          {/* Folder ID Input */}
-          <div style={{ marginBottom: 20 }}>
-            <label
-              style={{
-                fontSize: 11,
-                color: "var(--text-dim)",
-                textTransform: "uppercase",
-                letterSpacing: "0.1em",
-                display: "block",
-                marginBottom: 8,
-              }}
-            >
-              Enter Google Drive folder ID:
-            </label>
-            <input
-              type="text"
-              value={driveFolderId}
-              onChange={(e) => setDriveFolderId(e.target.value)}
-              placeholder="e.g. 1AbCdEfGhIjKlMnOp"
-              disabled={driveImporting}
-              style={{
-                width: "100%",
-                padding: "12px 16px",
-                background: "var(--surface2)",
-                border: "1px solid var(--border)",
-                borderRadius: 10,
-                color: "var(--text)",
-                fontSize: 13,
-                outline: "none",
-                transition: "border 0.2s",
-              }}
-              onFocus={(e) =>
-                (e.target.style.border = "1px solid rgba(251, 188, 4, 0.5)")
-              }
-              onBlur={(e) =>
-                (e.target.style.border = "1px solid var(--border)")
-              }
-            />
-          </div>
-
-          {/* Status Badge */}
-          <div style={{ marginBottom: 20 }}>
-            <Badge color="blue">Not Imported</Badge>
-          </div>
-
-          <GoldDivider />
-
-          {/* Action Button */}
-          <div style={{ marginTop: 20 }}>
-            <Button
-              onClick={handleDriveImport}
-              disabled={!driveFolderId.trim() || driveImporting}
-              icon={<FolderOpen size={14} />}
-            >
-              {driveImporting ? "Importing..." : "Import Drive Folder"}
-            </Button>
-          </div>
-
-          {/* Drive Progress/Result */}
-          {(driveImporting || driveResult || driveError) && (
-            <div style={{ marginTop: 20 }}>
-              {driveImporting && (
-                <>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 14,
-                      marginBottom: 16,
-                    }}
-                  >
-                    <Spinner />
-                    <span
-                      style={{
-                        fontSize: 14,
-                        fontWeight: 500,
-                        color: "var(--text)",
-                      }}
-                    >
-                      Syncing from Google Drive...
-                    </span>
-                  </div>
-                  <div
-                    style={{
-                      height: 4,
-                      background: "var(--surface2)",
-                      borderRadius: 4,
-                      overflow: "hidden",
-                    }}
-                  >
-                    <div
-                      style={{
-                        height: "100%",
-                        width: `${driveProgress}%`,
-                        background: "linear-gradient(90deg,#FBBC04,#FFD966)",
-                        borderRadius: 4,
-                        transition: "width 0.4s ease",
-                      }}
-                    />
-                  </div>
-                  <div
-                    style={{
-                      fontSize: 11,
-                      color: "var(--text-dim)",
-                      marginTop: 6,
-                    }}
-                  >
-                    {driveProgress}%
-                  </div>
-                </>
-              )}
-
-              {driveResult && (
-                <>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 14,
-                      marginBottom: 16,
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: 36,
-                        height: 36,
-                        borderRadius: "50%",
-                        background: "rgba(45, 122, 82, 0.2)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Check size={18} style={{ color: "#2D7A52" }} />
-                    </div>
-                    <div>
-                      <div
-                        style={{
-                          fontSize: 15,
-                          fontWeight: 600,
-                          color: "var(--text)",
-                        }}
-                      >
-                        Import Complete!
-                      </div>
-                      <div style={{ fontSize: 12, color: "var(--text-dim)" }}>
-                        Successfully synced from Google Drive
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: 16,
-                      paddingTop: 12,
-                      borderTop: "1px solid var(--border)",
-                    }}
-                  >
-                    {[
-                      {
-                        label: "New",
-                        value: driveResult.stats?.new || 0,
-                        color: "#2D7A52",
-                      },
-                      {
-                        label: "Updated",
-                        value: driveResult.stats?.updated || 0,
-                        color: "#FBBC04",
-                      },
-                    ].map((s, i) => (
-                      <div key={i}>
-                        <div
-                          style={{
-                            fontFamily: "var(--font-display)",
-                            fontSize: 28,
-                            fontWeight: 500,
-                            color: s.color,
-                          }}
-                        >
-                          {s.value}
-                        </div>
-                        <div
-                          style={{
-                            fontSize: 10,
-                            color: "var(--text-dim)",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.08em",
-                          }}
-                        >
-                          {s.label}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <div style={{ marginTop: 16 }}>
-                    <Button onClick={resetDrive} variant="ghost" size="sm">
-                      Dismiss
-                    </Button>
-                  </div>
-                </>
-              )}
-
-              {driveError && (
-                <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                  <div
-                    style={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: "50%",
-                      background: "rgba(184, 57, 46, 0.2)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <X size={18} style={{ color: "#B8392E" }} />
-                  </div>
-                  <div>
-                    <div
-                      style={{
-                        fontSize: 15,
-                        fontWeight: 600,
-                        color: "var(--text)",
-                      }}
-                    >
-                      Import Failed
-                    </div>
-                    <div style={{ fontSize: 12, color: "var(--text-dim)" }}>
-                      {driveError}
-                    </div>
-                  </div>
-                </div>
-              )}
+          {!driveImporting && !driveResult && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                <label style={{ fontSize: 12, color: "var(--text-dim)" }}>
+                  Google Drive Folder ID
+                </label>
+                <input
+                  type="text"
+                  value={driveFolderId}
+                  onChange={(e) => setDriveFolderId(e.target.value)}
+                  placeholder="Paste Folder ID here (e.g. 1abc123...)"
+                  style={{
+                    padding: "8px 12px",
+                    background: "var(--surface)",
+                    border: "1px solid var(--border)",
+                    borderRadius: 6,
+                    color: "var(--text)",
+                  }}
+                />
+              </div>
+              <Button
+                onClick={handleDriveImport}
+                disabled={!driveFolderId} // Disable if empty
+              >
+                Connect & Import Folder
+              </Button>
             </div>
           )}
-        </Card>
+
+          {driveImporting && (
+            <div style={{ textAlign: "center", padding: "20px 0" }}>
+              <Spinner size="lg" />{" "}
+              
+              <div
+                style={{
+                  fontSize: 14,
+                  color: "var(--text)",
+                  fontWeight: 500,
+                  marginBottom: 4,
+                  marginTop: 16,
+                }}
+              >
+                {(typeof driveProgress === "object" && driveProgress?.stage) ||
+                  "Connecting to Drive..."}
+              </div>
+              <div
+                style={{
+                  width: "100%",
+                  height: 6,
+                  background: "var(--surface2)",
+                  borderRadius: 3,
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  style={{
+                    width: `${typeof driveProgress === "object" ? driveProgress?.percent || 0 : 0}%`,
+                    height: "100%",
+                    background: "#4285F4",
+                    transition: "width 0.3s ease",
+                  }}
+                />
+              </div>
+            </div>
+          )}
+
+          {driveResult && (
+            <div style={{ padding: "10px 0" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  color: "#4CAF50",
+                  marginBottom: 12,
+                }}
+              >
+                <Check size={20} />
+                <span style={{ fontWeight: 600 }}>Import Successful</span>
+              </div>
+              <div
+                style={{
+                  fontSize: 13,
+                  color: "var(--text-dim)",
+                  marginBottom: 16,
+                }}
+              >
+                Successfully imported artworks from Drive.
+              </div>
+              <Button onClick={resetDrive} variant="ghost" size="sm">
+                Dismiss
+              </Button>
+            </div>
+          )}
+
+          {driveError && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "start",
+                gap: 12,
+                padding: 16,
+                background: "rgba(184, 57, 46, 0.1)",
+                borderRadius: 8,
+              }}
+            >
+              <X size={18} style={{ color: "#B8392E", marginTop: 2 }} />
+              <div style={{ flex: 1 }}>
+                <div
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 600,
+                    color: "var(--text)",
+                  }}
+                >
+                  Import Failed
+                </div>
+                <div style={{ fontSize: 12, color: "var(--text-dim)" }}>
+                  {driveError}
+                </div>
+                <div style={{ marginTop: 8 }}>
+                  <Button onClick={resetDrive} variant="ghost" size="sm">
+                    Try Again
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </Card> */}
       </div>
     </div>
   );
