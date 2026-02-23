@@ -9,7 +9,7 @@ import {
   enrichArtwork,
   getDepartments,
   importFromDrive,
-  getGoogleAuthUrl
+  getGoogleAuthUrl,
 } from "../api/client";
 import type {
   ImportMetResponse,
@@ -17,7 +17,7 @@ import type {
   ApiError,
   PaginatedResponse,
   CSVImportResponse,
-  DriveImportResponse 
+  DriveImportResponse,
 } from "../api/client";
 import type { Artwork } from "../types";
 
@@ -293,7 +293,11 @@ export function useDriveImport() {
     }
   };
 
-  const runImport = async (folderId: string, accessToken: string) => {
+  const runImport = async (
+    folderId: string,
+    accessToken: string,
+    onSuccess?: (items: any[]) => void,
+  ) => {
     setImporting(true);
     setError(null);
     setProgress({ stage: "Importing from Drive...", percent: 30 });
@@ -302,6 +306,11 @@ export function useDriveImport() {
       const data = await importFromDrive(folderId, accessToken);
       setProgress({ stage: "Complete!", percent: 100 });
       setResult(data);
+
+      if (onSuccess && data.items) {
+        onSuccess(data.items);
+      }
+      
       return data;
     } catch (err: any) {
       setError(err.message || "Drive import failed.");
@@ -317,13 +326,13 @@ export function useDriveImport() {
     setProgress({ stage: "", percent: 0 });
   };
 
-  return { 
-    importing, 
-    progress, 
-    result, 
-    error, 
+  return {
+    importing,
+    progress,
+    result,
+    error,
     initiateDriveImport, // Renamed here
-    runImport,     
-    reset 
+    runImport,
+    reset,
   };
 }

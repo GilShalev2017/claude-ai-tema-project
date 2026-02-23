@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import { Sidebar } from "./components/layout/Sidebar";
 import { TopBar } from "./components/layout/TopBar";
 import { DashboardPage } from "./pages/DashboardPage";
@@ -29,11 +29,15 @@ const PAGE_META: Record<Page, { title: string; subtitle: string }> = {
 export default function App() {
   const [page, setPage] = useState<Page>("dashboard");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  
+  const queryClient = useQueryClient();
 
   const { mode } = useTheme();
 
   // ── Handlers ─────────────────────────────────────────────────────────────
   const handleImportComplete = () => {
+    console.log(">>> [DEBUG] Invalidating collection query to force refresh");
+    queryClient.invalidateQueries({ queryKey: ["items"] });
     setPage("browse"); // Navigate to browse after successful import
   };
 
@@ -41,7 +45,7 @@ export default function App() {
   const subtitle = PAGE_META[page].subtitle;
 
   return (
-    <QueryClientProvider client={queryClient}>
+    // <QueryClientProvider client={queryClient}>
       <AppContent
         page={page}
         setPage={setPage}
@@ -50,7 +54,7 @@ export default function App() {
         subtitle={subtitle}
         onImportComplete={handleImportComplete}
       />
-    </QueryClientProvider>
+    // </QueryClientProvider>
   );
 }
 
@@ -70,6 +74,7 @@ function AppContent({
   onImportComplete: () => void;
 }) {
   const { enrich, isEnriching } = useEnrichment();
+
 
   const handleEnrich = async (id: string) => {
     await enrich(id);
