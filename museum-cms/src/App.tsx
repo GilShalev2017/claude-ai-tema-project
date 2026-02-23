@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
+import { QueryClient, useQueryClient } from "@tanstack/react-query";
 import { Sidebar } from "./components/layout/Sidebar";
 import { TopBar } from "./components/layout/TopBar";
 import { DashboardPage } from "./pages/DashboardPage";
@@ -8,7 +8,7 @@ import { BrowsePage } from "./pages/BrowsePage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { useTheme } from "./theme/useTheme";
 import { useEnrichment } from "./hooks/useEnrichment";
-import type { Artwork, Page } from "./types";
+import type { Page } from "./types";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -29,7 +29,7 @@ const PAGE_META: Record<Page, { title: string; subtitle: string }> = {
 export default function App() {
   const [page, setPage] = useState<Page>("dashboard");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  
+
   const queryClient = useQueryClient();
 
   const { mode } = useTheme();
@@ -45,16 +45,14 @@ export default function App() {
   const subtitle = PAGE_META[page].subtitle;
 
   return (
-    // <QueryClientProvider client={queryClient}>
-      <AppContent
-        page={page}
-        setPage={setPage}
-        sidebarCollapsed={sidebarCollapsed}
-        setSidebarCollapsed={setSidebarCollapsed}
-        subtitle={subtitle}
-        onImportComplete={handleImportComplete}
-      />
-    // </QueryClientProvider>
+    <AppContent
+      page={page}
+      setPage={setPage}
+      sidebarCollapsed={sidebarCollapsed}
+      setSidebarCollapsed={setSidebarCollapsed}
+      subtitle={subtitle}
+      onImportComplete={handleImportComplete}
+    />
   );
 }
 
@@ -74,7 +72,6 @@ function AppContent({
   onImportComplete: () => void;
 }) {
   const { enrich, isEnriching } = useEnrichment();
-
 
   const handleEnrich = async (id: string) => {
     await enrich(id);

@@ -1,30 +1,3 @@
-/*
-import React from 'react';
-
-export interface GoldDividerProps {
-  className?: string;
-  thickness?: 'thin' | 'medium' | 'thick';
-}
-
-export const GoldDivider: React.FC<GoldDividerProps> = ({
-  className = '',
-  thickness = 'thin',
-}) => {
-  const thicknessClasses = {
-    thin: 'h-px',
-    medium: 'h-0.5',
-    thick: 'h-1',
-  };
-
-  const classes = `
-    ${thicknessClasses[thickness]}
-    bg-gradient-to-r from-transparent via-yellow-400 to-transparent
-    ${className}
-  `.trim().replace(/\s+/g, ' ');
-
-  return <div className={classes} />;
-};
-*/
 export function GoldDivider() {
   return (
     <div

@@ -1,4 +1,3 @@
-// src/hooks/useEnrichment.ts
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { enrichArtwork } from "../api/client";
 import type { Artwork } from "../types";

@@ -1,5 +1,5 @@
 import { ThemeToggleButton } from "@/theme/themeToggleButton";
-import { Search, Bell } from "lucide-react";
+import { Bell } from "lucide-react";
 
 export function TopBar({
   title,
@@ -45,31 +45,6 @@ export function TopBar({
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
         <ThemeToggleButton />
-        {/* <div style={{ position: "relative" }}>
-          <Search
-            size={15}
-            style={{
-              position: "absolute",
-              left: 12,
-              top: "50%",
-              transform: "translateY(-50%)",
-              color: "var(--text-dim)",
-            }}
-          />
-          <input
-            placeholder="Quick search…"
-            style={{
-              background: "var(--surface2)",
-              border: "1px solid var(--border)",
-              borderRadius: 10,
-              padding: "8px 14px 8px 36px",
-              color: "var(--text)",
-              fontSize: 13,
-              width: 220,
-              outline: "none",
-            }}
-          />
-        </div> */}
         <button
           style={{
             position: "relative",

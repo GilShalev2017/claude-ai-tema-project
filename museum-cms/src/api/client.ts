@@ -185,7 +185,6 @@ export async function importFromCSV(
   return data;
 }
 
-// Add to client.ts
 export interface DriveImportResponse {
   success: boolean;
   items: Artwork[];
@@ -225,4 +224,5 @@ export async function deleteArtwork(id: string): Promise<{ success: boolean }> {
   const { data } = await api.delete<{ success: boolean }>(`/items/${id}`);
   return data;
 }
+
 export default api;

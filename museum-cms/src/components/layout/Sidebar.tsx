@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Menu } from "lucide-react";
 import { GoldDivider } from "../ui/GoldDivider";
 import { NAV } from "../../constants/navigation";

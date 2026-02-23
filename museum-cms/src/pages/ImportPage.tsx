@@ -1,15 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import {
-  RefreshCw,
   Search,
   ChevronDown,
   X,
   Check,
   Info,
-  Download,
   Upload,
   FileText,
-  FolderOpen,
 } from "lucide-react";
 import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
@@ -93,22 +90,7 @@ export function ImportPage({
     }
   };
 
-  // ══════════════════════════════════════════════════════════════════════════
-  // GOOGLE DRIVE STATE
-  // ══════════════════════════════════════════════════════════════════════════
-  //const [driveFolderId, setDriveFolderId] = useState("");
-  //const [driveImporting, setDriveImporting] = useState(false);
-  //const [driveProgress, setDriveProgress] = useState< number | { stage?: string; percent?: number }>(0);
-  //const [driveResult, setDriveResult] = useState<any>(null);
-  //const [driveError, setDriveError] = useState<string | null>(null);
-
-  // const {
-  //   initiateDriveImport,
-  //   importing: hookImporting,
-  //   error: hookError,
-  // } = useDriveImport();
-
-  // ══════════════════════════════════════════════════════════════════════════
+   // ══════════════════════════════════════════════════════════════════════════
   // EFFECTS
   // ══════════════════════════════════════════════════════════════════════════
   useEffect(() => {
@@ -132,38 +114,6 @@ export function ImportPage({
   };
 
   const clearDepartments = () => setSelectedDepts([]);
-
-  // ══════════════════════════════════════════════════════════════════════════
-  // GOOGLE DRIVE HANDLERS
-  // ══════════════════════════════════════════════════════════════════════════
-  // const handleDriveImport = async () => {
-  //   // Instead of setDriveProgress(0), use:
-  //   setDriveProgress({ stage: "Initializing...", percent: 0 });
-
-  //   try {
-  //     // Instead of setDriveProgress(20), use:
-  //     setDriveProgress({ stage: "Authenticating...", percent: 20 });
-
-  //     await initiateDriveImport();
-
-  //     // Instead of setDriveProgress(60), use:
-  //     setDriveProgress({ stage: "Connecting...", percent: 60 });
-
-  //     // ... rest of logic
-
-  //     // Instead of setDriveProgress(100), use:
-  //     setDriveProgress({ stage: "Complete", percent: 100 });
-  //   } catch (err) {
-  //     // Instead of setDriveProgress(0), use:
-  //     setDriveProgress(0);
-  //   }
-  // };
-
-  // const resetDrive = () => {
-  //   setDriveResult(null);
-  //   setDriveError(null);
-  //   setDriveProgress(0);
-  // };
 
   return (
     <div

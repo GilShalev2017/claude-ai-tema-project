@@ -1,35 +1,3 @@
-/*
-import React from 'react';
-
-export interface CardProps {
-  children: React.ReactNode;
-  className?: string;
-  hover?: boolean;
-  onClick?: () => void;
-}
-
-export const Card: React.FC<CardProps> = ({
-  children,
-  className = '',
-  hover = false,
-  onClick,
-}) => {
-  const baseClasses = 'bg-white rounded-lg shadow-sm border border-gray-200';
-  const hoverClasses = hover ? 'hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer' : '';
-  
-  const classes = `
-    ${baseClasses}
-    ${hoverClasses}
-    ${className}
-  `.trim().replace(/\s+/g, ' ');
-
-  return (
-    <div className={classes} onClick={onClick}>
-      {children}
-    </div>
-  );
-};
-*/
 import { useState } from 'react';
 
 export function Card({

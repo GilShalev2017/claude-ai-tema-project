@@ -1,5 +1,4 @@
-// src/hooks/useCollection.ts
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   getCollectionItems,
@@ -331,7 +330,7 @@ export function useDriveImport() {
     progress,
     result,
     error,
-    initiateDriveImport, // Renamed here
+    initiateDriveImport, 
     runImport,
     reset,
   };
