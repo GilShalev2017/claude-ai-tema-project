@@ -207,10 +207,22 @@ export async function importFromDrive(
 }
 
 export async function getGoogleAuthUrl(): Promise<string> {
-  const { data } = await api.get<{ url: string }>(
-    "/import/drive/auth",
-  );
+  const { data } = await api.get<{ url: string }>("/import/drive/auth");
   return data.url;
 }
 
+export async function clearCollection(): Promise<{
+  success: boolean;
+  count: number;
+}> {
+  const { data } = await api.delete<{ success: boolean; count: number }>(
+    "/clear",
+  );
+  return data;
+}
+
+export async function deleteArtwork(id: string): Promise<{ success: boolean }> {
+  const { data } = await api.delete<{ success: boolean }>(`/items/${id}`);
+  return data;
+}
 export default api;

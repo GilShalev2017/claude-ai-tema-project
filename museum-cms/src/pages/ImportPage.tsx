@@ -808,7 +808,7 @@ export function ImportPage({
         <Card
           style={{
             padding: 32,
-            border: "1px solid var(--border)",
+            border: "1px solid var(--border-gold)",
             position: "relative",
             overflow: "visible",
           }}
