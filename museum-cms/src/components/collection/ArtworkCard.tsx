@@ -16,7 +16,7 @@ export function ArtworkCard({ artwork, onClick }: ArtworkCardProps) {
   const [errorCount, setErrorCount] = useState(0);
   const [isRetrying, setIsRetrying] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  
+
   // useRef allows us to access the image element safely in async timeouts
   const imgRef = useRef<HTMLImageElement>(null);
   const queryClient = useQueryClient();
@@ -28,7 +28,7 @@ export function ArtworkCard({ artwork, onClick }: ArtworkCardProps) {
     // 1. Hard stop after 2 failures to prevent infinite loops
     if (errorCount >= 2) {
       if (imgRef.current) imgRef.current.src = FALLBACK_IMAGE;
-      setImgLoaded(true); 
+      setImgLoaded(true);
       return;
     }
 
@@ -38,7 +38,9 @@ export function ArtworkCard({ artwork, onClick }: ArtworkCardProps) {
     setIsRetrying(true);
     setErrorCount((prev) => prev + 1);
 
-    console.warn(`Image 429/Error. Cooling down 2s before retry #${errorCount + 1} for: ${artwork.title}`);
+    console.warn(
+      `Image 429/Error. Cooling down 2s before retry #${errorCount + 1} for: ${artwork.title}`,
+    );
 
     // 3. Back-off: Wait 2 seconds before trying again to let Google rate-limits reset
     setTimeout(() => {
@@ -53,7 +55,8 @@ export function ArtworkCard({ artwork, onClick }: ArtworkCardProps) {
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevents the Artwork Modal from opening
-    if (!window.confirm("Are you sure you want to delete this artwork?")) return;
+    if (!window.confirm("Are you sure you want to delete this artwork?"))
+      return;
 
     setIsDeleting(true);
     try {
@@ -92,8 +95,13 @@ export function ArtworkCard({ artwork, onClick }: ArtworkCardProps) {
         pointerEvents: isDeleting ? "none" : "auto",
       }}
     >
-      <div style={{ position: "relative", height: 200, background: "var(--surface2)" }}>
-        
+      <div
+        style={{
+          position: "relative",
+          height: 200,
+          background: "var(--surface2)",
+        }}
+      >
         {/* Delete Button - Top Left */}
         <button
           onClick={handleDelete}
@@ -153,6 +161,34 @@ export function ArtworkCard({ artwork, onClick }: ArtworkCardProps) {
           </div>
         )}
 
+        <div
+          style={{
+            position: "absolute",
+            top: 10,
+            right: 10,
+            opacity: isHovered ? 1 : 0,
+            transform: isHovered ? "translateY(0)" : "translateY(-5px)",
+            transition: "all 0.3s ease",
+          }}
+        >
+          <div
+            style={{
+              background: "rgba(0,0,0,0.75)",
+              backdropFilter: "blur(8px)",
+              color: "#fff",
+              fontSize: 9,
+              padding: "4px 8px",
+              borderRadius: 4,
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              fontWeight: 600,
+              border: "1px solid rgba(255,255,255,0.1)",
+            }}
+          >
+            {artwork.metadata?.department?.replace("The ", "")}
+          </div>
+        </div>
+        
         {artwork.aiKeywords && artwork.aiKeywords.length > 0 && (
           <div
             style={{
