@@ -1,7 +1,6 @@
 import { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
-  getCollectionItems,
   getItems,
   importFromMet,
   importFromCSV,
@@ -19,30 +18,6 @@ import type {
   DriveImportResponse,
 } from "../api/client";
 import type { Artwork } from "../types";
-
-// ── Hook: Fetch Collection Items ──────────────────────────────────────────
-export function useCollectionItems() {
-  const [items, setItems] = useState<Artwork[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchItems = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await getCollectionItems();
-      setItems(data);
-    } catch (err) {
-      const apiError = err as ApiError;
-      setError(apiError.message || "Failed to load collection");
-      console.error("Failed to fetch items:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return { items, loading, error, fetchItems, setItems };
-}
 
 // ── Hook: Fetch Paginated Collection Items ──────────────────────────────
 export function usePaginatedItems(page: number = 1, limit: number = 100) {

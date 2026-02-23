@@ -112,27 +112,9 @@ export async function importFromMet(
 }
 
 /**
- * Fetch all collection items from database (non-paginated)
- * 
- * Retrieves the complete collection of artworks from the local database.
- * Use this for dashboard stats, exports, or when you need all items at once.
- * For large collections, consider using the paginated version instead.
- * 
- * @returns Promise<Artwork[]> - Array of all artworks in the database
- * 
- * @example
- * const allArtworks = await getCollectionItems();
- * console.log(`Total items: ${allArtworks.length}`);
- */
-export async function getCollectionItems(): Promise<Artwork[]> {
-  const { data } = await api.get<Artwork[]>("/items");
-  return data;
-}
-
-/**
  * Fetch collection items with pagination
  * 
- * Retrieves artworks from the database with pagination support.
+ * Retrieves artworks from database with pagination support.
  * Ideal for browse pages and large collections where loading all items at once
  * would be inefficient.
  * 
@@ -293,6 +275,16 @@ export interface DriveImportResponse {
  * const result = await importFromDrive(folderId, accessToken);
  * console.log(`Imported ${result.items.length} artworks from Drive`);
  */
+export async function importFromDrive(
+  folderId: string,
+  accessToken: string,
+): Promise<DriveImportResponse> {
+  const { data } = await api.post<DriveImportResponse>("/import/drive", {
+    folderId,
+    accessToken,
+  });
+  return data;
+}
 
 /**
  * Get Google OAuth2 authorization URL
@@ -325,24 +317,6 @@ export async function getGoogleAuthUrl(): Promise<string> {
  * if (confirm("Delete all artworks? This cannot be undone.")) {
  *   const result = await clearCollection();
  *   console.log(`Deleted ${result.count} artworks`);
- * }
- */
-
-/**
- * Delete a single artwork from the database
- * 
- * Removes one artwork by its UUID. This is a soft delete that
- * permanently removes the record from the database. Consider implementing
- * a trash/recycle system if soft deletion is needed.
- * 
- * @param id - The artwork's UUID to delete
- * @returns Promise<{ success: boolean }> - Success status of the deletion
- * 
- * @example
- * const result = await deleteArtwork("123e4567-e89b-12d3-a456-426614174000");
- * if (result.success) {
- *   console.log("Artwork deleted successfully");
- *   // Refresh UI or navigate away
  * }
  */
 
