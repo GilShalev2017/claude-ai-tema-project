@@ -17,7 +17,6 @@ import {
   useMetImport,
   useDepartments,
   useCSVImport,
-  useDriveImport,
 } from "../hooks/useCollection";
 import type { Artwork } from "../types";
 import { DriveImportCard } from "../components/import/DriveImportCard";
