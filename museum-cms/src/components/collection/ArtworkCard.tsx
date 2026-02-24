@@ -137,7 +137,7 @@ export function ArtworkCard({ artwork, onClick }: ArtworkCardProps) {
             setImgLoaded(true);
             setIsRetrying(false);
           }}
-          // onError={handleImageError}
+          onError={handleImageError}
           style={{
             width: "100%",
             height: "100%",

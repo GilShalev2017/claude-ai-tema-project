@@ -10,7 +10,6 @@ import { useTheme } from "./theme/useTheme";
 import { useEnrichment } from "./hooks/useEnrichment";
 import type { Page } from "./types";
 
-
 const PAGE_META: Record<Page, { title: string; subtitle: string }> = {
   dashboard: { title: "Dashboard", subtitle: "Overview of your collection" },
   import: {
@@ -31,6 +30,37 @@ export default function App() {
   const queryClient = useQueryClient();
 
   const { mode } = useTheme();
+
+  const events = [
+    "click",
+    "pointerdown",
+    "pointerup",
+    "pointermove",
+    "wheel",
+    "mousedown",
+    "mouseup",
+    "touchstart",
+    "touchend",
+    "touchmove",
+  ];
+
+  events.forEach((ev) => {
+    window.addEventListener(
+      ev,
+      (e) => {
+        if (!e.target) return;
+        
+        const target = e.target as Element;
+        const name =
+          target.getAttribute("data-debug") ||
+          target.className ||
+          target.nodeName;
+
+        console.log(`[EVENT] ${ev} on`, name);
+      },
+      { passive: true },
+    );
+  });
 
   // ── Handlers ─────────────────────────────────────────────────────────────
   const handleImportComplete = () => {

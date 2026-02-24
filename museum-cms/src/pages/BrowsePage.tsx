@@ -24,8 +24,6 @@ interface BrowsePageProps {
 }
 
 export function BrowsePage({
-  onEnrich,
-  isEnriching,
   onImport,
 }: BrowsePageProps) {
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
