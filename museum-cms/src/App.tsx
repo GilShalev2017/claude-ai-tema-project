@@ -10,8 +10,6 @@ import { useTheme } from "./theme/useTheme";
 import { useEnrichment } from "./hooks/useEnrichment";
 import type { Page } from "./types";
 
-// Create a client
-const queryClient = new QueryClient();
 
 const PAGE_META: Record<Page, { title: string; subtitle: string }> = {
   dashboard: { title: "Dashboard", subtitle: "Overview of your collection" },

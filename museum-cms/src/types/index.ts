@@ -1,6 +1,5 @@
-import type { ReactNode } from "react";
-
 export type Page = "dashboard" | "import" | "browse" | "settings";
+
 export type ViewMode = "grid" | "list";
 
 export interface Artwork {
@@ -51,28 +50,6 @@ export interface Artwork {
     [key: string]: any;
    
   };
-}
-
-export interface ImportStats {
-  new: number;
-  updated: number;
-  removed: number;
-}
-
-export interface ImportStatus {
-  type: "idle" | "loading" | "success" | "error";
-  message: string;
-  stats?: ImportStats;
-}
-
-export interface ButtonProps {
-  children: ReactNode;
-  onClick?: () => void;
-  variant?: "primary" | "secondary" | "ghost" | "danger";
-  size?: "sm" | "md" | "lg";
-  disabled?: boolean;
-  icon?: ReactNode;
-  fullWidth?: boolean;
 }
 
 export interface Department {

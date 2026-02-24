@@ -13,7 +13,6 @@ import type {
   ImportMetResponse,
   Department,
   ApiError,
-  PaginatedResponse,
   CSVImportResponse,
   DriveImportResponse,
 } from "../api/client";
@@ -125,41 +124,6 @@ export function useMetImport() {
   return { importing, progress, result, error, runImport, abort, reset };
 }
 
-// ── Hook: AI Enrichment ────────────────────────────────────────────────────
-export function useArtworkEnrichment() {
-  const [enrichingIds, setEnrichingIds] = useState<Set<string>>(new Set());
-  const [error, setError] = useState<string | null>(null);
-
-  const enrich = async (
-    id: string,
-    artworks: Artwork[] = [],
-  ): Promise<Artwork | null> => {
-    setEnrichingIds((prev) => new Set(prev).add(id));
-    setError(null);
-
-    try {
-      // Use the Artwork.id directly (UUID) - no need to find artwork or use metadata
-      const enrichedItem = await enrichArtwork(id);
-      return enrichedItem;
-    } catch (err) {
-      const apiError = err as ApiError;
-      setError(apiError.message || "Enrichment failed");
-      console.error(`Failed to enrich artwork ${id}:`, err);
-      return null;
-    } finally {
-      setEnrichingIds((prev) => {
-        const next = new Set(prev);
-        next.delete(id);
-        return next;
-      });
-    }
-  };
-
-  const isEnriching = (id: string) => enrichingIds.has(id);
-
-  return { enrich, isEnriching, error };
-}
-
 // ── Hook: Fetch Departments ────────────────────────────────────────────────
 export function useDepartments() {
   const [departments, setDepartments] = useState<Department[]>([]);
@@ -261,7 +225,7 @@ export function useDriveImport() {
   const initiateDriveImport = async () => {
     try {
       const url = await getGoogleAuthUrl();
-      window.location.href = url;
+      window.location.href = url;//redirect to googl auth url!
     } catch (err: any) {
       setError("Failed to connect to Google Drive.");
     }

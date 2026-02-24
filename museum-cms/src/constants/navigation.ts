@@ -9,7 +9,7 @@ import type { Page } from "../types";
 
 export interface NavItem {
   id: Page;
-  icon: LucideIcon; // ← This is the key fix
+  icon: LucideIcon; 
   label: string;
 }
 

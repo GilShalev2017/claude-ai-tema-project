@@ -1,4 +1,3 @@
-// src/api/client.ts
 import axios, { AxiosError } from "axios";
 import type { Artwork } from "../types";
 

@@ -188,7 +188,7 @@ export function ArtworkCard({ artwork, onClick }: ArtworkCardProps) {
             {artwork.metadata?.department?.replace("The ", "")}
           </div>
         </div>
-        
+
         {artwork.aiKeywords && artwork.aiKeywords.length > 0 && (
           <div
             style={{
