@@ -31,36 +31,36 @@ export default function App() {
 
   const { mode } = useTheme();
 
-  const events = [
-    "click",
-    "pointerdown",
-    "pointerup",
-    "pointermove",
-    "wheel",
-    "mousedown",
-    "mouseup",
-    "touchstart",
-    "touchend",
-    "touchmove",
-  ];
+  // const events = [
+  //   "click",
+  //   "pointerdown",
+  //   "pointerup",
+  //   "pointermove",
+  //   "wheel",
+  //   "mousedown",
+  //   "mouseup",
+  //   "touchstart",
+  //   "touchend",
+  //   "touchmove",
+  // ];
 
-  events.forEach((ev) => {
-    window.addEventListener(
-      ev,
-      (e) => {
-        if (!e.target) return;
+  // events.forEach((ev) => {
+  //   window.addEventListener(
+  //     ev,
+  //     (e) => {
+  //       if (!e.target) return;
         
-        const target = e.target as Element;
-        const name =
-          target.getAttribute("data-debug") ||
-          target.className ||
-          target.nodeName;
+  //       const target = e.target as Element;
+  //       const name =
+  //         target.getAttribute("data-debug") ||
+  //         target.className ||
+  //         target.nodeName;
 
-        console.log(`[EVENT] ${ev} on`, name);
-      },
-      { passive: true },
-    );
-  });
+  //       console.log(`[EVENT] ${ev} on`, name);
+  //     },
+  //     { passive: true },
+  //   );
+  // });
 
   // ── Handlers ─────────────────────────────────────────────────────────────
   const handleImportComplete = () => {
